@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth 授權成功</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <div class="bg-white rounded-lg shadow-md p-8 text-center">
+            <svg class="mx-auto h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h1 class="text-3xl font-bold text-gray-800 mt-4">OAuth 授權成功！</h1>
+            <p class="text-gray-600 mt-2">您已成功授權 SHOPLINE 應用程式。</p>
+
+            <div class="mt-8 text-left">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">授權詳情</h2>
+                <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+                    <div class="mb-4">
+                        <p class="text-sm font-medium text-gray-500">授權範圍 (Scope):</p>
+                        <p id="scopeDisplay" class="token-display text-gray-800 mt-1">載入中...</p>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm font-medium text-gray-500">Access Token 過期時間:</p>
+                        <p id="expireTimeDisplay" class="token-display text-gray-800 mt-1">載入中...</p>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm font-medium text-gray-500">Refresh Token 過期時間:</p>
+                        <p id="refreshExpireTimeDisplay" class="token-display text-gray-800 mt-1">載入中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <a href="/" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    返回應用首頁
+                    <svg class="ml-2 -mr-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const shopHandle = urlParams.get('handle'); // 從 URL 獲取 shop handle
+
+            if (shopHandle) {
+                fetch(`/oauth/token-status?handle=${shopHandle}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.token) {
+                            document.getElementById('scopeDisplay').textContent = data.token.scope || 'N/A';
+                            document.getElementById('expireTimeDisplay').textContent = new Date(data.token.expireTime).toLocaleString() || 'N/A';
+                            document.getElementById('refreshExpireTimeDisplay').textContent = new Date(data.token.refreshExpireTime).toLocaleString() || 'N/A';
+                        } else {
+                            document.getElementById('scopeDisplay').textContent = '無法獲取 Token 資訊';
+                            document.getElementById('expireTimeDisplay').textContent = '無法獲取 Token 資訊';
+                            document.getElementById('refreshExpireTimeDisplay').textContent = '無法獲取 Token 資訊';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching token status:', error);
+                        document.getElementById('scopeDisplay').textContent = '載入 Token 資訊時發生錯誤';
+                        document.getElementById('expireTimeDisplay').textContent = '載入 Token 資訊時發生錯誤';
+                        document.getElementById('refreshExpireTimeDisplay').textContent = '載入 Token 資訊時發生錯誤';
+                    });
+            } else {
+                document.getElementById('scopeDisplay').textContent = '缺少商店 Handle 參數';
+                document.getElementById('expireTimeDisplay').textContent = '缺少商店 Handle 參數';
+                document.getElementById('refreshExpireTimeDisplay').textContent = '缺少商店 Handle 參數';
+            }
+        });
+    </script>
+</body>
+</html>

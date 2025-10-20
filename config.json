@@ -1,0 +1,9 @@
+{
+  "app_key": "4c951e966557c8374d9a61753dfe3c52441aba3b",
+  "app_secret": "dd46269d6920f49b07e810862d3093062b0fb858",
+  "shop_handle": "paykepoc",
+  "shop_url": "https://paykepoc.myshopline.com/",
+  "ngrok_token": "32oPQ50o6TPO04LvlnvuwjLKENf_29WWsE19EN9BxG4s1ehJU",
+  "port": 3000,
+  "node_env": "development"
+}
