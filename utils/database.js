@@ -4,7 +4,7 @@ const path = require('path')
 class Database {
   constructor() {
     this.db = null
-    this.dbPath = path.join(__dirname, '..', 'data', 'shopline_oauth.db')
+    this.dbPath = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'shopline_oauth.db')
   }
 
   // 初始化資料庫
