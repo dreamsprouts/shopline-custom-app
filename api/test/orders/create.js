@@ -25,8 +25,11 @@ module.exports = async (req, res) => {
   }
 
   try {
+    console.log('🔍 [建立訂單] 開始處理請求')
+    
     const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('❌ [建立訂單] 缺少 Authorization header')
       return res.status(401).json({ 
         success: false,
         error: 'Missing or invalid authorization header' 
@@ -34,8 +37,10 @@ module.exports = async (req, res) => {
     }
     
     const accessToken = authHeader.substring(7)
+    console.log('✅ [建立訂單] Token 已取得')
     
     // 1. 先取得商品列表，獲取有效的 variant_id
+    console.log('📦 [建立訂單] 開始取得商品列表')
     const apiClient = new ShoplineAPIClient()
     const productsResult = await apiClient.getProducts(accessToken, {
       page: 1,
@@ -43,7 +48,14 @@ module.exports = async (req, res) => {
       status: 'active'
     })
     
+    console.log('📦 [建立訂單] 商品 API 回應:', {
+      success: productsResult.success,
+      status: productsResult.status,
+      hasData: !!productsResult.data
+    })
+    
     if (!productsResult.success) {
+      console.error('❌ [建立訂單] 無法取得商品列表:', productsResult.error)
       return res.status(500).json({
         success: false,
         error: '無法取得商品列表',
@@ -52,7 +64,10 @@ module.exports = async (req, res) => {
     }
     
     const products = productsResult.data?.data?.products || []
+    console.log(`📦 [建立訂單] 找到 ${products.length} 個商品`)
+    
     if (products.length === 0) {
+      console.error('❌ [建立訂單] 商店中沒有商品')
       return res.status(400).json({
         success: false,
         error: '商店中沒有商品，無法建立訂單'
@@ -62,7 +77,10 @@ module.exports = async (req, res) => {
     // 取得第一個商品的第一個 variant
     const firstProduct = products[0]
     const variants = firstProduct.variants || []
+    console.log(`📦 [建立訂單] 商品「${firstProduct.title}」有 ${variants.length} 個 variants`)
+    
     if (variants.length === 0) {
+      console.error('❌ [建立訂單] 商品沒有有效的 variants')
       return res.status(400).json({
         success: false,
         error: '商品沒有有效的 variants'
@@ -70,6 +88,7 @@ module.exports = async (req, res) => {
     }
     
     const variantId = variants[0].id
+    console.log(`✅ [建立訂單] 使用 variant_id: ${variantId}`)
     
     // 2. 使用預設訂單資料建立訂單
     const orderData = {
@@ -119,19 +138,30 @@ module.exports = async (req, res) => {
     }
     
     // 建立訂單
+    console.log('🛒 [建立訂單] 開始建立訂單，payload:', JSON.stringify(orderData, null, 2))
     const result = await apiClient.createOrder(accessToken, orderData)
     
+    console.log('🛒 [建立訂單] API 回應:', {
+      success: result.success,
+      status: result.status,
+      hasData: !!result.data
+    })
+    
     if (result.success) {
+      console.log('✅ [建立訂單] 訂單建立成功')
       res.json(result)
     } else {
+      console.error('❌ [建立訂單] 訂單建立失敗:', result.error)
       res.status(result.status || 500).json(result)
     }
   } catch (error) {
-    console.error('Create order error:', error)
+    console.error('❌ [建立訂單] Exception:', error)
+    console.error('Stack trace:', error.stack)
     res.status(500).json({ 
       success: false,
       error: 'Failed to create order',
-      message: error.message 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     })
   }
 }
