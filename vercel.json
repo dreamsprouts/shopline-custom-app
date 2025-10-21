@@ -31,6 +31,18 @@
     {
       "source": "/api/test/products",
       "destination": "/api/test/products"
+    },
+    {
+      "source": "/api/test/orders/create",
+      "destination": "/api/test/orders/create"
+    },
+    {
+      "source": "/api/test/orders/list",
+      "destination": "/api/test/orders/list"
+    },
+    {
+      "source": "/api/test/orders/:id",
+      "destination": "/api/test/orders/[id]"
     }
   ],
   "functions": {
