@@ -399,13 +399,15 @@ class ShoplineAPIClient {
       
       console.log('✅ 建立訂單成功:', {
         status: response.status,
-        orderId: response.data?.data?.order?.id,
-        orderNumber: response.data?.data?.order?.order_number
+        orderId: response.data?.order?.id,
+        orderNumber: response.data?.order?.order_number
       })
       
       return {
         success: true,
-        data: response.data,
+        data: {
+          data: response.data  // 包裝成統一格式
+        },
         message: '建立訂單成功',
         apiInfo: {
           endpoint: url,
@@ -467,13 +469,22 @@ class ShoplineAPIClient {
       
       console.log('✅ 查詢訂單列表成功:', {
         status: response.status,
-        ordersCount: response.data?.data?.orders?.length || 0,
-        total: response.data?.data?.pagination?.total || 0
+        ordersCount: response.data?.orders?.length || 0,
+        total: response.data?.total_count || 0
       })
       
       return {
         success: true,
-        data: response.data,
+        data: {
+          data: {
+            orders: response.data?.orders || [],
+            pagination: {
+              total: response.data?.total_count || 0,
+              page: defaultParams.page,
+              limit: defaultParams.limit
+            }
+          }
+        },
         message: '查詢訂單列表成功',
         apiInfo: {
           endpoint: url,
@@ -529,13 +540,15 @@ class ShoplineAPIClient {
       
       console.log('✅ 查詢訂單詳情成功:', {
         status: response.status,
-        orderId: response.data?.data?.order?.id,
-        orderNumber: response.data?.data?.order?.order_number
+        orderId: response.data?.order?.id,
+        orderNumber: response.data?.order?.order_number
       })
       
       return {
         success: true,
-        data: response.data,
+        data: {
+          data: response.data  // 包裝成統一格式
+        },
         message: '查詢訂單詳情成功',
         apiInfo: {
           endpoint: url,
@@ -593,12 +606,14 @@ class ShoplineAPIClient {
       
       console.log('✅ 更新訂單成功:', {
         status: response.status,
-        orderId: response.data?.data?.order?.id
+        orderId: response.data?.order?.id
       })
       
       return {
         success: true,
-        data: response.data,
+        data: {
+          data: response.data  // 包裝成統一格式
+        },
         message: '更新訂單成功',
         apiInfo: {
           endpoint: url,
