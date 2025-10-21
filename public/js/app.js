@@ -626,6 +626,14 @@ class ShoplineOAuthApp {
                 }
             })
             
+            // 檢查回應是否為 JSON
+            const contentType = response.headers.get('content-type')
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text()
+                console.error('❌ 伺服器回傳非 JSON 格式:', text.substring(0, 200))
+                throw new Error('伺服器回傳格式錯誤（非 JSON）')
+            }
+            
             const data = await response.json()
             
             if (data.success) {
