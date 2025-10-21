@@ -206,10 +206,12 @@ sqlite3 data/shopline_oauth.db "SELECT * FROM oauth_tokens;"
 - [x] **本地測試** - `vercel dev` 本地 Serverless Functions 測試通過
 - [x] **UI 優化** - 改進結果呈現和錯誤處理
 
-### 📋 待測試項目
-- [ ] Vercel 版本的完整 OAuth 流程測試
-- [ ] 更新 SHOPLINE Developer Center Redirect URI 為 Vercel 網址
-- [ ] Vercel 生產環境的 API 端點測試
+### ✅ 測試完成項目
+- [x] Vercel 版本的完整 OAuth 流程測試
+- [x] 更新 SHOPLINE Developer Center Redirect URI 為 Vercel 網址
+- [x] Vercel 生產環境的 API 端點測試
+
+**Sprint 1 (v2.0.0) 完成！**
 
 ### 🎯 下一個 Sprint
 - [ ] 實作 Orders API（需要顧客和商品數據，複雜度較高）
