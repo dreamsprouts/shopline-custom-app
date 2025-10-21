@@ -573,7 +573,12 @@ class ShoplineOAuthApp {
         this.showLoading('正在建立訂單...')
         
         try {
-            const response = await fetch('/api/test/orders', {
+            // Vercel 使用 /api/test/orders/create，本地使用 /api/test/orders
+            const endpoint = window.location.hostname.includes('vercel.app') 
+                ? '/api/test/orders/create' 
+                : '/api/test/orders'
+            
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${this.tokenData.accessToken}`,
@@ -586,12 +591,12 @@ class ShoplineOAuthApp {
             
             if (data.success) {
                 // 儲存最後建立的訂單 ID
-                this.lastOrderId = data.data?.data?.order?.id
+                this.lastOrderId = data.data?.data?.order?.id || data.data?.order?.id
                 
                 this.showAPIResult('✅ 建立訂單成功', {
                     message: data.message,
                     orderId: this.lastOrderId,
-                    orderNumber: data.data?.data?.order?.order_number,
+                    orderNumber: data.data?.data?.order?.order_number || data.data?.order?.order_number,
                     apiInfo: data.apiInfo,
                     data: data.data,
                     timestamp: new Date().toISOString()
@@ -619,7 +624,12 @@ class ShoplineOAuthApp {
         this.showLoading('正在查詢訂單列表...')
         
         try {
-            const response = await fetch('/api/test/orders?page=1&limit=10', {
+            // Vercel 使用 /api/test/orders/list，本地使用 /api/test/orders
+            const endpoint = window.location.hostname.includes('vercel.app') 
+                ? '/api/test/orders/list?page=1&limit=10' 
+                : '/api/test/orders?page=1&limit=10'
+            
+            const response = await fetch(endpoint, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${this.tokenData.accessToken}`
@@ -683,7 +693,12 @@ class ShoplineOAuthApp {
         this.showLoading(`正在查詢訂單詳情 (ID: ${this.lastOrderId})...`)
         
         try {
-            const response = await fetch(`/api/test/orders/${this.lastOrderId}`, {
+            // Vercel 使用 /api/test/orders/[id]?id=，本地使用 /api/test/orders/:id
+            const endpoint = window.location.hostname.includes('vercel.app') 
+                ? `/api/test/orders/${this.lastOrderId}?id=${this.lastOrderId}` 
+                : `/api/test/orders/${this.lastOrderId}`
+            
+            const response = await fetch(endpoint, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${this.tokenData.accessToken}`
@@ -695,9 +710,9 @@ class ShoplineOAuthApp {
             if (data.success) {
                 this.showAPIResult('✅ 查詢訂單詳情成功', {
                     message: data.message,
-                    orderId: data.data?.data?.order?.id,
-                    orderNumber: data.data?.data?.order?.order_number,
-                    order: data.data?.data?.order,
+                    orderId: data.data?.data?.order?.id || data.data?.order?.id,
+                    orderNumber: data.data?.data?.order?.order_number || data.data?.order?.order_number,
+                    order: data.data?.data?.order || data.data?.order,
                     apiInfo: data.apiInfo,
                     timestamp: new Date().toISOString()
                 })
@@ -745,7 +760,12 @@ class ShoplineOAuthApp {
                 }
             }
             
-            const response = await fetch(`/api/test/orders/${this.lastOrderId}`, {
+            // Vercel 使用 /api/test/orders/[id]?id=，本地使用 /api/test/orders/:id
+            const endpoint = window.location.hostname.includes('vercel.app') 
+                ? `/api/test/orders/${this.lastOrderId}?id=${this.lastOrderId}` 
+                : `/api/test/orders/${this.lastOrderId}`
+            
+            const response = await fetch(endpoint, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${this.tokenData.accessToken}`,
@@ -759,7 +779,7 @@ class ShoplineOAuthApp {
             if (data.success) {
                 this.showAPIResult('✅ 更新訂單成功', {
                     message: data.message,
-                    orderId: data.data?.data?.order?.id,
+                    orderId: data.data?.data?.order?.id || data.data?.order?.id,
                     updatePayload: updatePayload,
                     apiInfo: data.apiInfo,
                     data: data.data,
