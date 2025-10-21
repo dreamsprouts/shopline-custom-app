@@ -66,7 +66,7 @@ open http://localhost:3000
 - ✅ **HMAC-SHA256 簽名驗證** - 符合 SHOPLINE 安全標準
 - ✅ **Token 持久化儲存** - PostgreSQL 資料庫（Prisma Postgres）
 - ✅ **前端 UI 管理** - 完整的用戶界面
-- ✅ **API 測試功能** - 商店與商品 API（含建立商品）；訂單列為下一 Sprint
+- ✅ **API 測試功能** - 商店資訊、商品查詢、商品建立（含動態 handle 生成）；訂單列為下一 Sprint
 - ✅ **本地開發環境** - ngrok 隧道支援
 - ✅ **Vercel 雲端部署** - Serverless Functions + Prisma Postgres
 
@@ -85,6 +85,11 @@ open http://localhost:3000
 ### 前端端點
 - `GET /` - 前端應用主頁
 - `GET /views/callback.html` - 授權成功頁面
+
+### API 測試端點
+- `GET /api/test/shop` - 測試商店資訊 API
+- `GET /api/test/products` - 測試商品查詢 API
+- `POST /api/test/products` - 測試商品建立 API（含動態 handle 生成）
 
 ### 系統端點
 - `GET /health` - 健康檢查

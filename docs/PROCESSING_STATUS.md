@@ -186,7 +186,33 @@ sqlite3 data/shopline_oauth.db "SELECT * FROM oauth_tokens;"
 
 ---
 
-**最後更新**: 2025-10-20 09:56:55  
+**最後更新**: 2025-10-21 05:00:00  
 **更新者**: AI Assistant  
-**狀態**: ✅ 系統正常運行  
-**版本**: 1.2.1 - 新增建立商品 POST 範例與按鈕/路由規劃
+**狀態**: ✅ Vercel 部署成功，本地測試完整通過  
+**版本**: 2.0.0 - PostgreSQL + Vercel Serverless Functions
+
+## 📋 當前 Sprint 完成狀態
+
+### ✅ 已完成功能
+- [x] **商店 API** - GET `/api/test/shop` 商店資訊查詢
+- [x] **商品查詢 API** - GET `/api/test/products` 商品列表查詢
+- [x] **商品建立 API** - POST `/api/test/products` 建立商品測試
+- [x] **前端按鈕調整** - 重新排序（商店 → 建立商品 → 檢視商品）
+- [x] **動態 handle 生成** - 自動生成唯一商品 handle，避免重複
+- [x] **OAuth 完整流程** - 本地環境（ngrok）完整測試通過
+- [x] **Token 管理** - 儲存、刷新、撤銷功能完整
+- [x] **API Scopes** - `read_store_information`, `read_products`, `write_products`
+- [x] **Vercel 部署** - PostgreSQL + Serverless Functions 部署成功
+- [x] **本地測試** - `vercel dev` 本地 Serverless Functions 測試通過
+- [x] **UI 優化** - 改進結果呈現和錯誤處理
+
+### 📋 待測試項目
+- [ ] Vercel 版本的完整 OAuth 流程測試
+- [ ] 更新 SHOPLINE Developer Center Redirect URI 為 Vercel 網址
+- [ ] Vercel 生產環境的 API 端點測試
+
+### 🎯 下一個 Sprint
+- [ ] 實作 Orders API（需要顧客和商品數據，複雜度較高）
+- [ ] 優化前端 UI 結果呈現
+- [ ] 增加完整的錯誤處理和日誌
+- [ ] CI/CD 自動化測試

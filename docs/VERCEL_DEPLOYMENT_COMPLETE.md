@@ -219,17 +219,36 @@ vercel --prod
 ### 回滾策略
 - Vercel Dashboard → Deployments → 選擇舊版本 → Promote to Production
 
+## 🎯 當前 Sprint 完成狀態
+
+### ✅ 已完成功能
+- [x] **商店 API** - GET `/api/test/shop` 商店資訊查詢
+- [x] **商品查詢 API** - GET `/api/test/products` 商品列表查詢
+- [x] **商品建立 API** - POST `/api/test/products` 建立商品測試
+- [x] **前端按鈕調整** - 重新排序（商店 → 建立商品 → 檢視商品）
+- [x] **動態 handle 生成** - 自動生成唯一商品 handle，避免重複
+- [x] **OAuth 完整流程** - 本地環境（ngrok）完整測試通過
+- [x] **Token 管理** - 儲存、刷新、撤銷功能完整
+- [x] **API Scopes** - `read_store_information`, `read_products`, `write_products`
+- [x] **Vercel 部署** - PostgreSQL + Serverless Functions 部署成功
+- [x] **本地測試** - `vercel dev` 本地 Serverless Functions 測試通過
+
+### 📋 待測試項目
+- [ ] Vercel 版本的完整 OAuth 流程測試
+- [ ] 更新 SHOPLINE Developer Center Redirect URI 為 Vercel 網址
+- [ ] Vercel 生產環境的 API 端點測試
+
 ## 🎯 下一步建議
 
-### 短期改進
+### 短期改進（本次 Sprint 收尾）
 - [ ] 完整測試 Vercel 版本的 OAuth 流程
 - [ ] 更新 SHOPLINE Developer Center Redirect URI
-- [ ] 監控和優化 Serverless Functions 效能
+- [ ] 驗證 Vercel 生產環境所有功能
 
-### 中期改進
-- [ ] 實作 Orders API（下一個 Sprint）
+### 中期改進（下一個 Sprint）
+- [ ] 實作 Orders API（需要顧客和商品數據，複雜度較高）
 - [ ] 優化前端 UI 結果呈現
-- [ ] 增加錯誤處理和日誌
+- [ ] 增加完整的錯誤處理和日誌
 
 ### 長期改進
 - [ ] CI/CD 自動化測試
