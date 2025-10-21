@@ -6,7 +6,10 @@ const {
   verifyTimestamp,
   signPostRequest 
 } = require('../utils/signature')
-const database = require('../utils/database-postgres')
+// 根據環境選擇資料庫
+const database = process.env.NODE_ENV === 'production' 
+  ? require('../utils/database-postgres')
+  : require('../utils/database')
 // 環境變數配置（Vercel 兼容）
 const config = {
   app_key: process.env.APP_KEY || '4c951e966557c8374d9a61753dfe3c52441aba3b',

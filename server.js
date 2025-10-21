@@ -11,7 +11,10 @@ const config = {
   node_env: process.env.NODE_ENV || 'development'
 }
 const oauthRoutes = require('./routes/oauth')
-const database = require('./utils/database-postgres')
+// 根據環境選擇資料庫
+const database = process.env.NODE_ENV === 'production' 
+  ? require('./utils/database-postgres')
+  : require('./utils/database')
 const ShoplineAPIClient = require('./utils/shopline-api')
 
 const app = express()
