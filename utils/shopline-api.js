@@ -527,27 +527,49 @@ class ShoplineAPIClient {
     try {
       console.log('🔍 開始查詢訂單詳情...')
       
-      const url = `${this.baseURL}/admin/openapi/v20260301/orders/${orderId}.json`
+      // 正確的查詢方式：使用 query parameter ids
+      const url = `${this.baseURL}/admin/openapi/v20260301/orders.json`
       const headers = this.buildAuthHeaders(accessToken)
+      const params = {
+        ids: orderId  // 使用 ids query parameter
+      }
       
       console.log('📡 發送查詢訂單詳情請求:', {
         url,
         headers: { ...headers, Authorization: 'Bearer [REDACTED]' },
-        orderId
+        params
       })
       
-      const response = await axios.get(url, { headers })
+      const response = await axios.get(url, { headers, params })
+      
+      // Debug: 顯示完整回應
+      console.log('📦 API 回應:', {
+        status: response.status,
+        ordersCount: response.data?.orders?.length || 0,
+        totalCount: response.data?.total_count,
+        firstOrderId: response.data?.orders?.[0]?.id
+      })
+      
+      // 從訂單列表中取得第一個訂單（應該只有一個）
+      const order = response.data?.orders?.[0]
+      
+      if (!order) {
+        console.error('❌ 回應中沒有訂單資料:', JSON.stringify(response.data, null, 2))
+        throw new Error('找不到指定的訂單')
+      }
       
       console.log('✅ 查詢訂單詳情成功:', {
         status: response.status,
-        orderId: response.data?.order?.id,
-        orderNumber: response.data?.order?.order_number
+        orderId: order.id,
+        orderNumber: order.order_number
       })
       
       return {
         success: true,
         data: {
-          data: response.data  // 包裝成統一格式
+          data: {
+            order: order  // 包裝成統一格式
+          }
         },
         message: '查詢訂單詳情成功',
         apiInfo: {
@@ -572,7 +594,7 @@ class ShoplineAPIClient {
         status: error.response?.status,
         code: error.response?.data?.code,
         apiInfo: {
-          endpoint: `${this.baseURL}/admin/openapi/v20260301/orders/${orderId}.json`,
+          endpoint: `${this.baseURL}/admin/openapi/v20260301/orders.json?ids=${orderId}`,
           method: 'GET',
           timestamp: new Date().toISOString(),
           source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/get-orders?version=v20260301'

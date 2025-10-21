@@ -224,36 +224,23 @@ async function testOrdersAPI() {
       console.warn('   ⚠️  剛建立的訂單不在當前頁列表中（可能在其他頁）')
     }
     
-    // Step 5: 查詢訂單詳情（如果 API 支援）
-    console.log('\n📋 Step 5: 查詢訂單詳情')
+    // Step 5: 查詢訂單詳情（使用 query parameter ids）
+    console.log('\n📋 Step 5: 查詢訂單詳情（使用 ids parameter）')
+    console.log('   ⏳ 等待 3 秒讓訂單索引完成...')
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    
     const detailResult = await apiClient.getOrderDetail(accessToken, orderId)
     
     if (!detailResult.success) {
-      if (detailResult.status === 405) {
-        console.warn('   ⚠️  SHOPLINE API 不支援透過 ID 查詢單一訂單（405 Method Not Allowed）')
-        console.warn('   跳過此步驟，從訂單列表中取得訂單資訊')
-        
-        // 從訂單列表中找到剛建立的訂單
-        const foundOrder = orders.find(o => o.id === orderId)
-        if (foundOrder) {
-          console.log('   ✅ 從訂單列表中找到訂單')
-          console.log('   訂單 ID:', foundOrder.id)
-          console.log('   訂單編號:', foundOrder.order_number)
-          console.log('   Tags:', foundOrder.tags)
-        } else {
-          console.warn('   ⚠️  無法從訂單列表中找到訂單')
-        }
-      } else {
-        console.error('   ❌ 查詢訂單詳情失敗:', detailResult.error)
-        throw new Error('查詢訂單詳情失敗')
-      }
-    } else {
-      const orderDetail = detailResult.data?.data?.order
-      console.log('   ✅ 成功查詢訂單詳情')
-      console.log('   訂單 ID:', orderDetail?.id)
-      console.log('   訂單編號:', orderDetail?.order_number)
-      console.log('   Tags:', orderDetail?.tags)
+      console.error('   ❌ 查詢訂單詳情失敗:', detailResult.error)
+      throw new Error('查詢訂單詳情失敗')
     }
+    
+    const orderDetail = detailResult.data?.data?.order
+    console.log('   ✅ 成功查詢訂單詳情')
+    console.log('   訂單 ID:', orderDetail?.id)
+    console.log('   訂單編號:', orderDetail?.order_number)
+    console.log('   Tags:', orderDetail?.tags)
     
     // Step 6: 更新訂單
     console.log('\n📋 Step 6: 更新訂單')
@@ -282,32 +269,29 @@ async function testOrdersAPI() {
     console.log('   新 Tags:', updatePayload.order.tags)
     
     // Step 7: 再次查詢訂單詳情（驗證更新）
-    console.log('\n📋 Step 7: 再次查詢訂單列表（驗證更新）')
-    const verifyListResult = await apiClient.getOrders(accessToken, { page: 1, limit: 10 })
+    console.log('\n📋 Step 7: 再次查詢訂單詳情（驗證更新）')
+    const verifyResult = await apiClient.getOrderDetail(accessToken, orderId)
     
-    if (!verifyListResult.success) {
-      console.error('   ❌ 驗證查詢失敗:', verifyListResult.error)
+    if (!verifyResult.success) {
+      console.error('   ❌ 驗證查詢失敗:', verifyResult.error)
       throw new Error('驗證查詢失敗')
     }
     
-    const verifyOrders = verifyListResult.data?.data?.orders || []
-    const verifiedOrder = verifyOrders.find(o => o.id === orderId)
+    const verifiedOrder = verifyResult.data?.data?.order
+    console.log('   ✅ 成功查詢訂單詳情')
+    console.log('   訂單 ID:', verifiedOrder?.id)
+    console.log('   Tags:', verifiedOrder?.tags)
     
-    if (verifiedOrder) {
-      console.log('   ✅ 成功從訂單列表中找到訂單')
-      console.log('   訂單 ID:', verifiedOrder.id)
-      console.log('   Tags:', verifiedOrder.tags)
-      
-      // 驗證更新是否成功
-      if (verifiedOrder.tags === updatePayload.order.tags) {
-        console.log('   ✅ 確認 Tags 已更新')
-      } else {
-        console.warn('   ⚠️  Tags 可能未更新或更新延遲')
-        console.warn('   預期:', updatePayload.order.tags)
-        console.warn('   實際:', verifiedOrder.tags)
-      }
+    // 驗證更新是否成功（Tags 可能是字串或陣列）
+    const actualTags = Array.isArray(verifiedOrder?.tags) ? verifiedOrder.tags[0] : verifiedOrder?.tags
+    const expectedTags = updatePayload.order.tags
+    
+    if (actualTags === expectedTags || verifiedOrder?.tags?.includes(expectedTags)) {
+      console.log('   ✅ 確認 Tags 已更新')
     } else {
-      console.warn('   ⚠️  無法從訂單列表中找到訂單')
+      console.warn('   ⚠️  Tags 未更新')
+      console.warn('   預期:', expectedTags)
+      console.warn('   實際:', verifiedOrder?.tags)
     }
     
     // 測試總結
