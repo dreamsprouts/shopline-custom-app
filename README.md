@@ -23,21 +23,25 @@ open http://localhost:3000
 ## 📚 文件導航
 
 ### 🔧 開發文件
-- **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - 系統架構和設計
-- **[docs/SHOPLINE_STANDARDS.md](./docs/SHOPLINE_STANDARDS.md)** - SHOPLINE 平台標準代碼
-- **[docs/API_DOCUMENTATION.md](./docs/API_DOCUMENTATION.md)** - API 端點文件
+- **[docs/architecture/ARCHITECTURE.md](./docs/architecture/ARCHITECTURE.md)** - 系統架構和設計
+- **[docs/architecture/VERCEL_ARCHITECTURE.md](./docs/architecture/VERCEL_ARCHITECTURE.md)** - ⚠️ **必讀** Vercel 架構說明
+- **[docs/research/SHOPLINE_STANDARDS.md](./docs/research/SHOPLINE_STANDARDS.md)** - SHOPLINE 平台標準代碼
+- **[docs/api/API_DOCUMENTATION.md](./docs/api/API_DOCUMENTATION.md)** - API 端點文件
 
 ### 🚀 部署文件
 - **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** - 部署和維護指南
 - **[GUIDE.md](./GUIDE.md)** - 完整實作指南
 
 ### 📊 狀態監控
-- **[docs/PROCESSING_STATUS.md](./docs/PROCESSING_STATUS.md)** - 處理狀態和日誌
+- **[docs/status/PROCESSING_STATUS.md](./docs/status/PROCESSING_STATUS.md)** - 處理狀態和日誌
+
+### 📋 開發流程 (⚠️ 強制執行)
+- **[docs/workflow/DEVELOPMENT_WORKFLOW.md](./docs/workflow/DEVELOPMENT_WORKFLOW.md)** - 標準開發流程
+- **[docs/workflow/API_DEVELOPMENT_CHECKLIST.md](./docs/workflow/API_DEVELOPMENT_CHECKLIST.md)** - ⚠️ **新增 API 必讀** 開發檢查清單
 
 ### 📖 文件體系
 - **[docs/INDEX.md](./docs/INDEX.md)** - 文件索引和導航
 - **[docs/DOCS_SUMMARY.md](./docs/DOCS_SUMMARY.md)** - 文件體系總結
-- **[docs/INFORMATION_SOURCES.md](./docs/INFORMATION_SOURCES.md)** - 資訊來源管理
 
 ## 🏗️ 系統架構
 

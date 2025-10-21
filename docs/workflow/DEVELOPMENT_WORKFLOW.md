@@ -133,17 +133,27 @@
 - 依據規格進行開發
 - 遵循程式碼品質標準
 - 進行單元測試
+- **確保本地和 Vercel 環境同時實作**
 
 #### 產出
 - 實作代碼
 - 單元測試
 - 代碼註解
 
+#### ⚠️ **新增 API 端點時的強制流程**
+**必須完成**：`docs/workflow/API_DEVELOPMENT_CHECKLIST.md`
+1. 實作本地路由 (`server.js`)
+2. 建立 Vercel Serverless Function (`api/**/*.js`)
+3. 更新前端環境偵測 (`public/js/app.js`)
+4. 本地測試通過
+5. Vercel 測試通過
+
 #### 檢查點
-- [ ] 代碼已完成
+- [ ] 代碼已完成（**本地 + Vercel 雙環境**）
 - [ ] 單元測試已通過
 - [ ] 代碼品質已檢查
 - [ ] 註解已完整
+- [ ] **API 開發檢查清單已完成（如適用）**
 
 ### 7. 功能測試 (Feature Testing)
 
@@ -306,6 +316,18 @@
 
 ### Sprint 規劃範本
 詳見：`docs/templates/SPRINT_PLANNING_TEMPLATE.md`
+
+## 🏗️ **架構與部署文件（必讀）**
+
+### Vercel 架構說明
+**強制閱讀**：`docs/architecture/VERCEL_ARCHITECTURE.md`
+- 說明本地開發 vs Vercel 部署的架構差異
+- 避免「本地正常，Vercel 失敗」的問題
+
+### API 開發檢查清單
+**強制執行**：`docs/workflow/API_DEVELOPMENT_CHECKLIST.md`
+- 新增任何 API 端點前必須完成檢查清單
+- 確保本地和 Vercel 環境同時正常運作
 
 ---
 
