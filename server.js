@@ -11,7 +11,7 @@ const config = {
   node_env: process.env.NODE_ENV || 'development'
 }
 const oauthRoutes = require('./routes/oauth')
-const database = require('./utils/database')
+const database = require('./utils/database-postgres')
 const ShoplineAPIClient = require('./utils/shopline-api')
 
 const app = express()
