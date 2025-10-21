@@ -377,6 +377,261 @@ class ShoplineAPIClient {
   }
 
   /**
+   * 建立訂單
+   * @param {string} accessToken - Access Token
+   * @param {object} orderPayload - 訂單資料
+   * @returns {Object} API 回應
+   */
+  async createOrder(accessToken, orderPayload) {
+    try {
+      console.log('🧩 開始建立訂單...')
+      
+      const url = `${this.baseURL}/admin/openapi/v20260301/orders.json`
+      const headers = this.buildAuthHeaders(accessToken)
+      
+      console.log('📡 發送建立訂單請求:', {
+        url,
+        headers: { ...headers, Authorization: 'Bearer [REDACTED]' },
+        payload: orderPayload
+      })
+      
+      const response = await axios.post(url, orderPayload, { headers })
+      
+      console.log('✅ 建立訂單成功:', {
+        status: response.status,
+        orderId: response.data?.data?.order?.id,
+        orderNumber: response.data?.data?.order?.order_number
+      })
+      
+      return {
+        success: true,
+        data: response.data,
+        message: '建立訂單成功',
+        apiInfo: {
+          endpoint: url,
+          method: 'POST',
+          status: response.status,
+          timestamp: new Date().toISOString(),
+          source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/create-an-order?version=v20260301'
+        }
+      }
+    } catch (error) {
+      console.error('❌ 建立訂單失敗:', {
+        message: error.message,
+        status: error.response?.status,
+        code: error.response?.data?.code,
+        data: error.response?.data
+      })
+      
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+        status: error.response?.status,
+        code: error.response?.data?.code,
+        apiInfo: {
+          endpoint: `${this.baseURL}/admin/openapi/v20260301/orders.json`,
+          method: 'POST',
+          timestamp: new Date().toISOString(),
+          source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/create-an-order?version=v20260301'
+        }
+      }
+    }
+  }
+
+  /**
+   * 查詢訂單列表
+   * @param {string} accessToken - Access Token
+   * @param {object} params - 查詢參數 (page, limit, status, etc.)
+   * @returns {Object} API 回應
+   */
+  async getOrders(accessToken, params = {}) {
+    try {
+      console.log('🔍 開始查詢訂單列表...')
+      
+      const url = `${this.baseURL}/admin/openapi/v20260301/orders.json`
+      const headers = this.buildAuthHeaders(accessToken)
+      
+      const defaultParams = {
+        page: 1,
+        limit: 10,
+        ...params
+      }
+      
+      console.log('📡 發送查詢訂單列表請求:', {
+        url,
+        headers: { ...headers, Authorization: 'Bearer [REDACTED]' },
+        params: defaultParams
+      })
+      
+      const response = await axios.get(url, { headers, params: defaultParams })
+      
+      console.log('✅ 查詢訂單列表成功:', {
+        status: response.status,
+        ordersCount: response.data?.data?.orders?.length || 0,
+        total: response.data?.data?.pagination?.total || 0
+      })
+      
+      return {
+        success: true,
+        data: response.data,
+        message: '查詢訂單列表成功',
+        apiInfo: {
+          endpoint: url,
+          method: 'GET',
+          status: response.status,
+          timestamp: new Date().toISOString(),
+          source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/get-orders?version=v20260301'
+        }
+      }
+    } catch (error) {
+      console.error('❌ 查詢訂單列表失敗:', {
+        message: error.message,
+        status: error.response?.status,
+        code: error.response?.data?.code,
+        data: error.response?.data
+      })
+      
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+        status: error.response?.status,
+        code: error.response?.data?.code,
+        apiInfo: {
+          endpoint: `${this.baseURL}/admin/openapi/v20260301/orders.json`,
+          method: 'GET',
+          timestamp: new Date().toISOString(),
+          source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/get-orders?version=v20260301'
+        }
+      }
+    }
+  }
+
+  /**
+   * 查詢訂單詳情
+   * @param {string} accessToken - Access Token
+   * @param {string} orderId - 訂單 ID
+   * @returns {Object} API 回應
+   */
+  async getOrderDetail(accessToken, orderId) {
+    try {
+      console.log('🔍 開始查詢訂單詳情...')
+      
+      const url = `${this.baseURL}/admin/openapi/v20260301/orders/${orderId}.json`
+      const headers = this.buildAuthHeaders(accessToken)
+      
+      console.log('📡 發送查詢訂單詳情請求:', {
+        url,
+        headers: { ...headers, Authorization: 'Bearer [REDACTED]' },
+        orderId
+      })
+      
+      const response = await axios.get(url, { headers })
+      
+      console.log('✅ 查詢訂單詳情成功:', {
+        status: response.status,
+        orderId: response.data?.data?.order?.id,
+        orderNumber: response.data?.data?.order?.order_number
+      })
+      
+      return {
+        success: true,
+        data: response.data,
+        message: '查詢訂單詳情成功',
+        apiInfo: {
+          endpoint: url,
+          method: 'GET',
+          status: response.status,
+          timestamp: new Date().toISOString(),
+          source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/get-orders?version=v20260301'
+        }
+      }
+    } catch (error) {
+      console.error('❌ 查詢訂單詳情失敗:', {
+        message: error.message,
+        status: error.response?.status,
+        code: error.response?.data?.code,
+        data: error.response?.data
+      })
+      
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+        status: error.response?.status,
+        code: error.response?.data?.code,
+        apiInfo: {
+          endpoint: `${this.baseURL}/admin/openapi/v20260301/orders/${orderId}.json`,
+          method: 'GET',
+          timestamp: new Date().toISOString(),
+          source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/get-orders?version=v20260301'
+        }
+      }
+    }
+  }
+
+  /**
+   * 更新訂單
+   * @param {string} accessToken - Access Token
+   * @param {string} orderId - 訂單 ID
+   * @param {object} updatePayload - 更新資料
+   * @returns {Object} API 回應
+   */
+  async updateOrder(accessToken, orderId, updatePayload) {
+    try {
+      console.log('🔄 開始更新訂單...')
+      
+      const url = `${this.baseURL}/admin/openapi/v20260301/orders/${orderId}.json`
+      const headers = this.buildAuthHeaders(accessToken)
+      
+      console.log('📡 發送更新訂單請求:', {
+        url,
+        headers: { ...headers, Authorization: 'Bearer [REDACTED]' },
+        orderId,
+        payload: updatePayload
+      })
+      
+      const response = await axios.put(url, updatePayload, { headers })
+      
+      console.log('✅ 更新訂單成功:', {
+        status: response.status,
+        orderId: response.data?.data?.order?.id
+      })
+      
+      return {
+        success: true,
+        data: response.data,
+        message: '更新訂單成功',
+        apiInfo: {
+          endpoint: url,
+          method: 'PUT',
+          status: response.status,
+          timestamp: new Date().toISOString(),
+          source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/update-an-order?version=v20260301'
+        }
+      }
+    } catch (error) {
+      console.error('❌ 更新訂單失敗:', {
+        message: error.message,
+        status: error.response?.status,
+        code: error.response?.data?.code,
+        data: error.response?.data
+      })
+      
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+        status: error.response?.status,
+        code: error.response?.data?.code,
+        apiInfo: {
+          endpoint: `${this.baseURL}/admin/openapi/v20260301/orders/${orderId}.json`,
+          method: 'PUT',
+          timestamp: new Date().toISOString(),
+          source: 'https://developer.shopline.com/docs/admin-rest-api/order/order-management/update-an-order?version=v20260301'
+        }
+      }
+    }
+  }
+
+  /**
    * 測試所有 API 端點
    * @param {string} accessToken - Access Token
    * @returns {Object} 所有 API 測試結果

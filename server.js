@@ -134,6 +134,110 @@ app.get('/api/test/products', async (req, res) => {
   }
 })
 
+// 建立訂單 API
+app.post('/api/test/orders', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Missing or invalid authorization header' 
+      })
+    }
+    
+    const accessToken = authHeader.substring(7)
+    const orderPayload = req.body
+    
+    // 先獲取商品列表以取得有效的 variant_id
+    const apiClient = new ShoplineAPIClient()
+    const productsResult = await apiClient.testProductsAPI(accessToken)
+    
+    if (!productsResult.success) {
+      return res.status(500).json({
+        success: false,
+        error: '無法獲取商品列表',
+        details: productsResult
+      })
+    }
+    
+    // 取得第一個商品的 variant_id
+    const products = productsResult.data?.data?.products || []
+    if (products.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: '商店中沒有商品，無法建立訂單'
+      })
+    }
+    
+    const firstProduct = products[0]
+    const variantId = firstProduct.variants?.[0]?.id
+    
+    if (!variantId) {
+      return res.status(400).json({
+        success: false,
+        error: '商品沒有有效的 variant_id'
+      })
+    }
+    
+    // 如果沒有提供 orderPayload，使用預設的測試訂單
+    const finalOrderPayload = orderPayload?.order ? orderPayload : {
+      order: {
+        note_attributes: [
+          {
+            name: "API_REMARK",
+            value: `test order created at ${new Date().toISOString()}`
+          }
+        ],
+        tags: "API_Test",
+        price_info: {
+          current_extra_total_discounts: "0.00",
+          taxes_included: null,
+          total_shipping_price: "0.00"
+        },
+        line_items: [
+          {
+            discount_price: {
+              amount: "0.00",
+              title: "No discount"
+            },
+            location_id: firstProduct.location_id || "",
+            price: firstProduct.variants?.[0]?.price || "100.00",
+            properties: [],
+            quantity: 1,
+            requires_shipping: null,
+            shipping_line_title: null,
+            tax_line: {
+              price: "0.00",
+              rate: "0.000",
+              title: "No tax"
+            },
+            taxable: null,
+            title: firstProduct.title || "Test Product",
+            variant_id: variantId
+          }
+        ]
+      }
+    }
+    
+    // 建立訂單
+    const result = await apiClient.createOrder(accessToken, finalOrderPayload)
+    
+    if (result.success) {
+      res.json(result)
+    } else {
+      res.status(result.status || 500).json(result)
+    }
+  } catch (error) {
+    console.error('Create order error:', error)
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to create order',
+      message: error.message 
+    })
+  }
+})
+
+// 查詢訂單列表 API
 app.get('/api/test/orders', async (req, res) => {
   try {
     const authHeader = req.headers.authorization
@@ -145,10 +249,14 @@ app.get('/api/test/orders', async (req, res) => {
     }
     
     const accessToken = authHeader.substring(7)
+    const params = {
+      page: parseInt(req.query.page) || 1,
+      limit: parseInt(req.query.limit) || 10
+    }
     
-    // 使用 SHOPLINE API 客戶端測試訂單 API
+    // 查詢訂單列表
     const apiClient = new ShoplineAPIClient()
-    const result = await apiClient.testOrdersAPI(accessToken)
+    const result = await apiClient.getOrders(accessToken, params)
     
     if (result.success) {
       res.json(result)
@@ -156,10 +264,77 @@ app.get('/api/test/orders', async (req, res) => {
       res.status(result.status || 500).json(result)
     }
   } catch (error) {
-    console.error('Orders API test error:', error)
+    console.error('Get orders error:', error)
     res.status(500).json({ 
       success: false,
-      error: 'API test failed',
+      error: 'Failed to get orders',
+      message: error.message 
+    })
+  }
+})
+
+// 查詢訂單詳情 API
+app.get('/api/test/orders/:id', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Missing or invalid authorization header' 
+      })
+    }
+    
+    const accessToken = authHeader.substring(7)
+    const orderId = req.params.id
+    
+    // 查詢訂單詳情
+    const apiClient = new ShoplineAPIClient()
+    const result = await apiClient.getOrderDetail(accessToken, orderId)
+    
+    if (result.success) {
+      res.json(result)
+    } else {
+      res.status(result.status || 500).json(result)
+    }
+  } catch (error) {
+    console.error('Get order detail error:', error)
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to get order detail',
+      message: error.message 
+    })
+  }
+})
+
+// 更新訂單 API
+app.put('/api/test/orders/:id', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Missing or invalid authorization header' 
+      })
+    }
+    
+    const accessToken = authHeader.substring(7)
+    const orderId = req.params.id
+    const updatePayload = req.body
+    
+    // 更新訂單
+    const apiClient = new ShoplineAPIClient()
+    const result = await apiClient.updateOrder(accessToken, orderId, updatePayload)
+    
+    if (result.success) {
+      res.json(result)
+    } else {
+      res.status(result.status || 500).json(result)
+    }
+  } catch (error) {
+    console.error('Update order error:', error)
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to update order',
       message: error.message 
     })
   }

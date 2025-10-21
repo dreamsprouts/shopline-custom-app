@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
     console.log('✅ 安裝請求驗證成功')
     
     // 重導向到 SHOPLINE 授權頁面
-    const scope = 'read_store_information,read_products,write_products'
+    const scope = 'read_store_information,read_products,write_products,read_orders,write_orders'
     const redirectUri = `${req.headers['x-forwarded-proto'] || 'https'}://${req.headers.host}/oauth/callback`
     const authUrl = `https://${handle}.myshopline.com/admin/oauth-web/#/oauth/authorize?appKey=${config.app_key}&responseType=code&scope=${scope}&redirectUri=${encodeURIComponent(redirectUri)}`
     

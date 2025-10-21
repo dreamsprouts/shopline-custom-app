@@ -186,7 +186,7 @@ class ShoplineOAuthApp {
         this.showLoading('正在啟動授權流程...')
         
         // 構建授權 URL
-        const scope = 'read_store_information,read_products,write_products'
+        const scope = 'read_store_information,read_products,write_products,read_orders,write_orders'
         const redirectUri = `${window.location.origin}/oauth/callback`
         const authUrl = `https://${this.config.shopHandle}.myshopline.com/admin/oauth-web/#/oauth/authorize?appKey=${this.config.appKey}&responseType=code&scope=${scope}&redirectUri=${encodeURIComponent(redirectUri)}`
         
