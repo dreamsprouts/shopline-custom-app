@@ -7,7 +7,14 @@ const {
   signPostRequest 
 } = require('../utils/signature')
 const database = require('../utils/database')
-const config = require('../config.json')
+// 環境變數配置（Vercel 兼容）
+const config = {
+  app_key: process.env.APP_KEY || '4c951e966557c8374d9a61753dfe3c52441aba3b',
+  app_secret: process.env.APP_SECRET || 'dd46269d6920f49b07e810862d3093062b0fb858',
+  shop_handle: process.env.SHOP_HANDLE || 'paykepoc',
+  shop_url: process.env.SHOP_URL || 'https://paykepoc.myshopline.com/',
+  node_env: process.env.NODE_ENV || 'development'
+}
 
 const router = express.Router()
 

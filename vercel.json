@@ -1,0 +1,48 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/views/index.html"
+    },
+    {
+      "src": "/health",
+      "dest": "/api/health"
+    },
+    {
+      "src": "/oauth/install",
+      "dest": "/api/oauth/install"
+    },
+    {
+      "src": "/oauth/callback",
+      "dest": "/api/oauth/callback"
+    },
+    {
+      "src": "/oauth/refresh",
+      "dest": "/api/oauth/refresh"
+    },
+    {
+      "src": "/oauth/revoke",
+      "dest": "/api/oauth/revoke"
+    },
+    {
+      "src": "/api/test/shop",
+      "dest": "/api/test/shop"
+    },
+    {
+      "src": "/api/test/products",
+      "dest": "/api/test/products"
+    }
+  ],
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 30
+    }
+  }
+}
