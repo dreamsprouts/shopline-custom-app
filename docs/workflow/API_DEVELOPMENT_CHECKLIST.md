@@ -78,7 +78,19 @@
 
 - [ ] **3.3** 確認邏輯與 `server.js` 一致
 
-- [ ] **3.4** 本地測試 Vercel Function (可選)
+- [ ] **3.4** 更新 `vercel.json` 路由設定 ⚠️ **必須**
+  ```json
+  {
+    "rewrites": [
+      {
+        "source": "/api/your/endpoint",
+        "destination": "/api/your/endpoint"
+      }
+    ]
+  }
+  ```
+
+- [ ] **3.5** 本地測試 Vercel Function (可選)
   ```bash
   vercel dev
   # 訪問 http://localhost:3000/api/...
@@ -190,11 +202,15 @@
 **症狀**：本地和 Vercel 回應不同  
 **檢查**：server.js 和 Vercel Function 邏輯是否完全一致？
 
-### ❌ 錯誤 4：CORS 設定缺失
+### ❌ 錯誤 4：未更新 vercel.json
+**症狀**：Vercel 回傳 500 或 404 錯誤  
+**檢查**：`vercel.json` 是否有新增路由設定？
+
+### ❌ 錯誤 5：CORS 設定缺失
 **症狀**：Vercel 出現 CORS 錯誤  
 **檢查**：Vercel Function 是否有設定 CORS headers？
 
-### ❌ 錯誤 5：未更新前端版本號
+### ❌ 錯誤 6：未更新前端版本號
 **症狀**：前端沒有使用最新代碼  
 **檢查**：`views/index.html` 的 `app.js?v=` 版本號是否更新？
 
