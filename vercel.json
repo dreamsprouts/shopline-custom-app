@@ -1,43 +1,36 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/views/index.html"
+      "source": "/",
+      "destination": "/views/index.html"
     },
     {
-      "src": "/health",
-      "dest": "/api/health"
+      "source": "/health",
+      "destination": "/api/health"
     },
     {
-      "src": "/oauth/install",
-      "dest": "/api/oauth/install"
+      "source": "/oauth/install",
+      "destination": "/api/oauth/install"
     },
     {
-      "src": "/oauth/callback",
-      "dest": "/api/oauth/callback"
+      "source": "/oauth/callback",
+      "destination": "/api/oauth/callback"
     },
     {
-      "src": "/oauth/refresh",
-      "dest": "/api/oauth/refresh"
+      "source": "/oauth/refresh",
+      "destination": "/api/oauth/refresh"
     },
     {
-      "src": "/oauth/revoke",
-      "dest": "/api/oauth/revoke"
+      "source": "/oauth/revoke",
+      "destination": "/api/oauth/revoke"
     },
     {
-      "src": "/api/test/shop",
-      "dest": "/api/test/shop"
+      "source": "/api/test/shop",
+      "destination": "/api/test/shop"
     },
     {
-      "src": "/api/test/products",
-      "dest": "/api/test/products"
+      "source": "/api/test/products",
+      "destination": "/api/test/products"
     }
   ],
   "functions": {
