@@ -3,7 +3,8 @@
  * POST /api/test/orders/create
  */
 
-const ShoplineAPIClient = require('../../../utils/shopline-api')
+const path = require('path')
+const ShoplineAPIClient = require(path.join(process.cwd(), 'utils', 'shopline-api'))
 
 module.exports = async (req, res) => {
   // 設定 CORS headers
