@@ -288,7 +288,7 @@ async function startServer() {
       console.log(`🔧 環境: ${config.node_env}`)
       console.log(`🏪 商店: ${config.shop_handle}`)
       console.log(`🔑 App Key: ${config.app_key}`)
-      console.log(`💾 資料庫: SQLite`)
+      console.log(`💾 資料庫: PostgreSQL`)
       console.log('')
       console.log('📋 可用端點:')
       console.log(`   GET  /                    - 前端應用`)
