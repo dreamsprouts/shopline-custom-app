@@ -10,9 +10,9 @@
 - **API 端點**: ✅ 全部正常
 
 ### 最後更新
-- **時間**: 2025-10-21 05:00:00
-- **版本**: 2.0.0
-- **狀態**: ✅ Vercel 部署成功（PostgreSQL + Serverless Functions）
+- **時間**: 2025-10-21 21:55:00
+- **版本**: 2.2.0
+- **狀態**: ✅ Sprint 2 完成 - Orders API 已部署到 Vercel
 - **正式網址**: https://shopline-custom-app.vercel.app
 
 ## 🔄 處理流程狀態
@@ -186,10 +186,10 @@ sqlite3 data/shopline_oauth.db "SELECT * FROM oauth_tokens;"
 
 ---
 
-**最後更新**: 2025-10-21 05:00:00  
+**最後更新**: 2025-10-21 21:55:00  
 **更新者**: AI Assistant  
-**狀態**: ✅ Vercel 部署成功，本地測試完整通過  
-**版本**: 2.0.0 - PostgreSQL + Vercel Serverless Functions
+**狀態**: ✅ Sprint 2 完成 - Orders API 已部署到 Vercel  
+**版本**: 2.2.0 - PostgreSQL + Vercel Serverless Functions + Orders API
 
 ## 📋 當前 Sprint 完成狀態
 
@@ -213,8 +213,56 @@ sqlite3 data/shopline_oauth.db "SELECT * FROM oauth_tokens;"
 
 **Sprint 1 (v2.0.0) 完成！**
 
+---
+
+## 📋 Sprint 2: Orders API - 完成狀態 (v2.2.0)
+
+### ✅ 已完成功能
+- [x] **後端 Orders API** - 完整實作於 `server.js`
+  - POST `/api/test/orders` - 建立訂單（含自動 GET Products 取得 variant_id）
+  - GET `/api/test/orders` - 查詢訂單列表
+  - GET `/api/test/orders/:id` - 查詢訂單詳情
+  - PUT `/api/test/orders/:id` - 更新訂單
+- [x] **API Client** - `utils/shopline-api.js`
+  - `createOrder()` - 建立訂單
+  - `getOrders()` - 查詢訂單列表
+  - `getOrderDetail()` - 查詢訂單詳情（使用 ids query parameter）
+  - `updateOrder()` - 更新訂單
+- [x] **前端 UI** - `views/index.html` + `public/js/app.js`
+  - 建立訂單按鈕
+  - 查詢訂單列表按鈕
+  - 查詢訂單詳情按鈕
+  - 更新訂單按鈕
+  - 自動儲存 `lastOrderId` 供後續操作使用
+- [x] **Access Scopes** - 已申請並測試
+  - `read_orders` - 讀取訂單
+  - `write_orders` - 建立和修改訂單
+- [x] **後端測試腳本** - `scripts/test-orders-api.js`
+  - 完整測試流程：建立訂單 → 查詢列表 → 查詢詳情 → 更新 → 再次查詢
+  - 自動建立商品（如商店無商品）
+  - 所有測試通過 ✅
+- [x] **Vercel Serverless Functions** - Orders API
+  - `api/test/orders/create.js` - 建立訂單
+  - `api/test/orders/list.js` - 查詢訂單列表
+  - `api/test/orders/[id].js` - 查詢/更新訂單詳情
+- [x] **前端環境偵測** - 自動切換 API 端點
+  - Vercel: 使用 `/api/test/orders/create`, `/api/test/orders/list`, `/api/test/orders/[id]`
+  - localhost: 使用 `/api/test/orders` (Express.js 路由)
+- [x] **文件更新**
+  - `docs/sprints/SPRINT2_ORDERS_API_SPEC.md` - 完整規格
+  - `docs/sprints/SPRINT2_TESTING_GUIDE.md` - 測試指南
+  - `docs/research/SHOPLINE_ACCESS_SCOPES.md` - Access Scopes 說明
+  - `docs/research/SHOPLINE_ORDER_STATUS_RULES.md` - 訂單狀態規則
+
+### ✅ 測試完成項目
+- [x] 本地後端測試 (`scripts/test-orders-api.js`) - 全部通過
+- [x] 本地前端測試 (localhost:3000) - 全部通過
+- [x] Vercel 部署 - 成功
+- [x] Vercel 環境測試 - 待用戶確認
+
+**Sprint 2 (v2.2.0) 完成！**
+
 ### 🎯 下一個 Sprint
-- [ ] 實作 Orders API（需要顧客和商品數據，複雜度較高）
 - [ ] 優化前端 UI 結果呈現
 - [ ] 增加完整的錯誤處理和日誌
 - [ ] CI/CD 自動化測試
