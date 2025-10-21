@@ -32,7 +32,7 @@ class ShoplineOAuthApp {
             this.revokeAuthorization()
         })
 
-        // 新按鈕事件
+        // 商店與商品 API 按鈕
         const testShopBtn = document.getElementById('testShopBtn')
         if (testShopBtn) testShopBtn.addEventListener('click', () => this.testShopAPI())
 
@@ -41,6 +41,19 @@ class ShoplineOAuthApp {
 
         const testProductsBtn = document.getElementById('testProductsBtn')
         if (testProductsBtn) testProductsBtn.addEventListener('click', () => this.testProductsAPI())
+
+        // 訂單 API 按鈕
+        const createOrderBtn = document.getElementById('createOrderBtn')
+        if (createOrderBtn) createOrderBtn.addEventListener('click', () => this.createOrderAPI())
+
+        const getOrdersBtn = document.getElementById('getOrdersBtn')
+        if (getOrdersBtn) getOrdersBtn.addEventListener('click', () => this.getOrdersAPI())
+
+        const getOrderDetailBtn = document.getElementById('getOrderDetailBtn')
+        if (getOrderDetailBtn) getOrderDetailBtn.addEventListener('click', () => this.getOrderDetailAPI())
+
+        const updateOrderBtn = document.getElementById('updateOrderBtn')
+        if (updateOrderBtn) updateOrderBtn.addEventListener('click', () => this.updateOrderAPI())
     }
 
     async checkServerStatus() {
@@ -154,9 +167,18 @@ class ShoplineOAuthApp {
             const testShopBtn = document.getElementById('testShopBtn')
             const createProductBtn = document.getElementById('createProductBtn')
             const testProductsBtn = document.getElementById('testProductsBtn')
+            const createOrderBtn = document.getElementById('createOrderBtn')
+            const getOrdersBtn = document.getElementById('getOrdersBtn')
+            const getOrderDetailBtn = document.getElementById('getOrderDetailBtn')
+            const updateOrderBtn = document.getElementById('updateOrderBtn')
+            
             if (testShopBtn) testShopBtn.disabled = false
             if (createProductBtn) createProductBtn.disabled = false
             if (testProductsBtn) testProductsBtn.disabled = false
+            if (createOrderBtn) createOrderBtn.disabled = false
+            if (getOrdersBtn) getOrdersBtn.disabled = false
+            if (getOrderDetailBtn) getOrderDetailBtn.disabled = false
+            if (updateOrderBtn) updateOrderBtn.disabled = false
         } else {
             // 顯示未授權狀態
             document.getElementById('authorizedState').classList.add('hidden')
@@ -166,9 +188,17 @@ class ShoplineOAuthApp {
             const testShopBtn = document.getElementById('testShopBtn')
             const createProductBtn = document.getElementById('createProductBtn')
             const testProductsBtn = document.getElementById('testProductsBtn')
+            const createOrderBtn = document.getElementById('createOrderBtn')
+            const getOrdersBtn = document.getElementById('getOrdersBtn')
+            const getOrderDetailBtn = document.getElementById('getOrderDetailBtn')
+            const updateOrderBtn = document.getElementById('updateOrderBtn')
             if (testShopBtn) testShopBtn.disabled = true
             if (createProductBtn) createProductBtn.disabled = true
             if (testProductsBtn) testProductsBtn.disabled = true
+            if (createOrderBtn) createOrderBtn.disabled = true
+            if (getOrdersBtn) getOrdersBtn.disabled = true
+            if (getOrderDetailBtn) getOrderDetailBtn.disabled = true
+            if (updateOrderBtn) updateOrderBtn.disabled = true
         }
     }
 
@@ -293,9 +323,18 @@ class ShoplineOAuthApp {
         const testShopBtn = document.getElementById('testShopBtn')
         const createProductBtn = document.getElementById('createProductBtn')
         const testProductsBtn = document.getElementById('testProductsBtn')
+        const createOrderBtn = document.getElementById('createOrderBtn')
+        const getOrdersBtn = document.getElementById('getOrdersBtn')
+        const getOrderDetailBtn = document.getElementById('getOrderDetailBtn')
+        const updateOrderBtn = document.getElementById('updateOrderBtn')
+        
         if (testShopBtn) testShopBtn.disabled = false
         if (createProductBtn) createProductBtn.disabled = false
         if (testProductsBtn) testProductsBtn.disabled = false
+        if (createOrderBtn) createOrderBtn.disabled = false
+        if (getOrdersBtn) getOrdersBtn.disabled = false
+        if (getOrderDetailBtn) getOrderDetailBtn.disabled = false
+        if (updateOrderBtn) updateOrderBtn.disabled = false
     }
 
     async refreshToken() {
@@ -376,9 +415,18 @@ class ShoplineOAuthApp {
                 const testShopBtn = document.getElementById('testShopBtn')
                 const createProductBtn = document.getElementById('createProductBtn')
                 const testProductsBtn = document.getElementById('testProductsBtn')
+                const createOrderBtn = document.getElementById('createOrderBtn')
+                const getOrdersBtn = document.getElementById('getOrdersBtn')
+                const getOrderDetailBtn = document.getElementById('getOrderDetailBtn')
+                const updateOrderBtn = document.getElementById('updateOrderBtn')
+                
                 if (testShopBtn) testShopBtn.disabled = true
                 if (createProductBtn) createProductBtn.disabled = true
                 if (testProductsBtn) testProductsBtn.disabled = true
+                if (createOrderBtn) createOrderBtn.disabled = true
+                if (getOrdersBtn) getOrdersBtn.disabled = true
+                if (getOrderDetailBtn) getOrderDetailBtn.disabled = true
+                if (updateOrderBtn) updateOrderBtn.disabled = true
                 
                 this.showSuccess('授權已撤銷，Token 資料已清除。')
             } else {
@@ -518,6 +566,215 @@ class ShoplineOAuthApp {
       }
       this.hideLoading()
   }
+
+    // ==================== 訂單 API 方法 ====================
+    
+    async createOrderAPI() {
+        this.showLoading('正在建立訂單...')
+        
+        try {
+            const response = await fetch('/api/test/orders', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.tokenData.accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})  // 使用後端的預設測試訂單
+            })
+            
+            const data = await response.json()
+            
+            if (data.success) {
+                // 儲存最後建立的訂單 ID
+                this.lastOrderId = data.data?.data?.order?.id
+                
+                this.showAPIResult('✅ 建立訂單成功', {
+                    message: data.message,
+                    orderId: this.lastOrderId,
+                    orderNumber: data.data?.data?.order?.order_number,
+                    apiInfo: data.apiInfo,
+                    data: data.data,
+                    timestamp: new Date().toISOString()
+                })
+            } else {
+                this.showAPIResult('❌ 建立訂單失敗', {
+                    error: data.error,
+                    status: data.status,
+                    apiInfo: data.apiInfo,
+                    timestamp: new Date().toISOString()
+                })
+            }
+        } catch (error) {
+            console.error('建立訂單失敗:', error)
+            this.showAPIResult('❌ 建立訂單失敗', { 
+                error: error.message,
+                timestamp: new Date().toISOString()
+            })
+        }
+        
+        this.hideLoading()
+    }
+
+    async getOrdersAPI() {
+        this.showLoading('正在查詢訂單列表...')
+        
+        try {
+            const response = await fetch('/api/test/orders?page=1&limit=10', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.tokenData.accessToken}`
+                }
+            })
+            
+            const data = await response.json()
+            
+            if (data.success) {
+                const orders = data.data?.data?.orders || []
+                
+                // 儲存第一個訂單 ID 供後續使用
+                if (orders.length > 0 && !this.lastOrderId) {
+                    this.lastOrderId = orders[0].id
+                }
+                
+                this.showAPIResult('✅ 查詢訂單列表成功', {
+                    message: data.message,
+                    ordersCount: orders.length,
+                    total: data.data?.data?.pagination?.total || 0,
+                    orders: orders,
+                    apiInfo: data.apiInfo,
+                    timestamp: new Date().toISOString()
+                })
+            } else {
+                this.showAPIResult('❌ 查詢訂單列表失敗', {
+                    error: data.error,
+                    status: data.status,
+                    apiInfo: data.apiInfo,
+                    timestamp: new Date().toISOString()
+                })
+            }
+        } catch (error) {
+            console.error('查詢訂單列表失敗:', error)
+            this.showAPIResult('❌ 查詢訂單列表失敗', { 
+                error: error.message,
+                timestamp: new Date().toISOString()
+            })
+        }
+        
+        this.hideLoading()
+    }
+
+    async getOrderDetailAPI() {
+        if (!this.lastOrderId) {
+            this.showAPIResult('⚠️ 請先建立訂單或查詢訂單列表', {
+                message: '需要先取得訂單 ID',
+                timestamp: new Date().toISOString()
+            })
+            return
+        }
+        
+        this.showLoading(`正在查詢訂單詳情 (ID: ${this.lastOrderId})...`)
+        
+        try {
+            const response = await fetch(`/api/test/orders/${this.lastOrderId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.tokenData.accessToken}`
+                }
+            })
+            
+            const data = await response.json()
+            
+            if (data.success) {
+                this.showAPIResult('✅ 查詢訂單詳情成功', {
+                    message: data.message,
+                    orderId: data.data?.data?.order?.id,
+                    orderNumber: data.data?.data?.order?.order_number,
+                    order: data.data?.data?.order,
+                    apiInfo: data.apiInfo,
+                    timestamp: new Date().toISOString()
+                })
+            } else {
+                this.showAPIResult('❌ 查詢訂單詳情失敗', {
+                    error: data.error,
+                    status: data.status,
+                    apiInfo: data.apiInfo,
+                    timestamp: new Date().toISOString()
+                })
+            }
+        } catch (error) {
+            console.error('查詢訂單詳情失敗:', error)
+            this.showAPIResult('❌ 查詢訂單詳情失敗', { 
+                error: error.message,
+                timestamp: new Date().toISOString()
+            })
+        }
+        
+        this.hideLoading()
+    }
+
+    async updateOrderAPI() {
+        if (!this.lastOrderId) {
+            this.showAPIResult('⚠️ 請先建立訂單或查詢訂單列表', {
+                message: '需要先取得訂單 ID',
+                timestamp: new Date().toISOString()
+            })
+            return
+        }
+        
+        this.showLoading(`正在更新訂單 (ID: ${this.lastOrderId})...`)
+        
+        try {
+            // 簡單的更新：修改 tags 和 note_attributes
+            const updatePayload = {
+                order: {
+                    tags: `Updated_${Date.now()}`,
+                    note_attributes: [
+                        {
+                            name: "API_REMARK",
+                            value: `Updated at ${new Date().toISOString()}`
+                        }
+                    ]
+                }
+            }
+            
+            const response = await fetch(`/api/test/orders/${this.lastOrderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${this.tokenData.accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatePayload)
+            })
+            
+            const data = await response.json()
+            
+            if (data.success) {
+                this.showAPIResult('✅ 更新訂單成功', {
+                    message: data.message,
+                    orderId: data.data?.data?.order?.id,
+                    updatePayload: updatePayload,
+                    apiInfo: data.apiInfo,
+                    data: data.data,
+                    timestamp: new Date().toISOString()
+                })
+            } else {
+                this.showAPIResult('❌ 更新訂單失敗', {
+                    error: data.error,
+                    status: data.status,
+                    apiInfo: data.apiInfo,
+                    timestamp: new Date().toISOString()
+                })
+            }
+        } catch (error) {
+            console.error('更新訂單失敗:', error)
+            this.showAPIResult('❌ 更新訂單失敗', { 
+                error: error.message,
+                timestamp: new Date().toISOString()
+            })
+        }
+        
+        this.hideLoading()
+    }
 
     async testOrdersAPI() {
         this.showLoading('正在測試訂單 API...')
