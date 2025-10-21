@@ -10,9 +10,10 @@
 - **API 端點**: ✅ 全部正常
 
 ### 最後更新
-- **時間**: 2025-10-20 13:06:00
-- **版本**: 1.2.2
-- **狀態**: 開發就緒（商店/商品 API 通過實測）
+- **時間**: 2025-10-21 05:00:00
+- **版本**: 2.0.0
+- **狀態**: ✅ Vercel 部署成功（PostgreSQL + Serverless Functions）
+- **正式網址**: https://shopline-custom-app.vercel.app
 
 ## 🔄 處理流程狀態
 
@@ -24,10 +25,17 @@
 5. **前端顯示** ✅ - UI 狀態更新正常
 
 ### 資料庫操作
-- **Token 儲存** ✅ - 成功儲存到 SQLite
+- **Token 儲存** ✅ - 成功儲存到 PostgreSQL (Prisma Postgres)
 - **Token 查詢** ✅ - 狀態查詢正常
 - **Token 刪除** ✅ - 撤銷功能正常
 - **Token 更新** ✅ - 刷新功能正常
+
+### Vercel 部署狀態
+- **建置** ✅ - Build 成功
+- **部署** ✅ - Deployment 成功
+- **健康檢查** ✅ - `/health` 端點正常
+- **環境變數** ✅ - POSTGRES_URL 已配置
+- **Serverless Functions** ✅ - 所有 API Functions 正常運作
 
 ## 📝 關鍵日誌
 
