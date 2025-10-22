@@ -1,247 +1,309 @@
-# 文件體系說明
+# Custom App 文件中心
 
-## 📁 目錄結構
-
-```
-docs/
-├── README.md                    # 本文件，文件體系說明
-│
-├── architecture/                # 架構設計文件
-│   └── ARCHITECTURE.md         # 系統架構文件
-│
-├── workflow/                    # 開發流程文件
-│   └── DEVELOPMENT_WORKFLOW.md # 開發流程規範（所有 Agent 必讀）
-│
-├── sprints/                     # Sprint 規劃文件
-│   ├── SPRINT2_ORDERS_API_SPEC.md
-│   └── [future sprints]
-│
-├── api/                         # API 文件
-│   └── API_DOCUMENTATION.md    # API 端點文件
-│
-├── research/                    # 研究與標準文件
-│   ├── SHOPLINE_API_RESEARCH.md
-│   ├── SHOPLINE_API_TEST_RESULTS.md
-│   └── SHOPLINE_STANDARDS.md
-│
-├── status/                      # 狀態與部署文件
-│   ├── PROCESSING_STATUS.md
-│   ├── VERCEL_DEPLOYMENT_COMPLETE.md
-│   ├── VERCEL_DEPLOYMENT_NOTES.md
-│   └── VERCEL_DEPLOYMENT_STATUS.md
-│
-├── templates/                   # 文件範本（待建立）
-│   ├── SPEC_TEMPLATE.md
-│   ├── TEST_CASE_TEMPLATE.md
-│   └── SPRINT_PLANNING_TEMPLATE.md
-│
-├── DEPLOYMENT.md               # 部署指南
-├── DOCS_SUMMARY.md             # 文件總結
-├── INDEX.md                    # 文件索引
-└── INFORMATION_SOURCES.md      # 資訊來源
-```
-
-## 📚 文件分類說明
-
-### 🏗️ architecture/ - 架構設計
-**用途**：系統架構、技術選型、設計決策
-
-**檔案**：
-- `ARCHITECTURE.md` - 系統架構文件
-
-**使用時機**：
-- 設計新功能時參考
-- 理解系統架構
-- 進行技術決策
-
-### 🔄 workflow/ - 開發流程
-**用途**：開發流程規範、最佳實踐、品質標準
-
-**檔案**：
-- `DEVELOPMENT_WORKFLOW.md` - 開發流程規範（⚠️ 所有 Agent 必讀）
-
-**使用時機**：
-- 開始新 Sprint 前必讀
-- 不確定流程時查閱
-- 進行 Code Review 時參考
-
-**⚠️ 重要**：所有 Agent 必須嚴格遵循此流程！
-
-### 📋 sprints/ - Sprint 規劃
-**用途**：各個 Sprint 的規格文件、需求分析、Story 規劃
-
-**檔案命名規則**：`SPRINT{N}_{FEATURE}_SPEC.md`
-- 範例：`SPRINT2_ORDERS_API_SPEC.md`
-
-**使用時機**：
-- 規劃新 Sprint
-- 開發前確認需求
-- 追蹤 Sprint 進度
-
-**文件狀態**：
-- 📝 規格設計中
-- ✅ 規格已確認
-- 🚧 開發中
-- ✅ 已完成
-
-### 🔌 api/ - API 文件
-**用途**：API 端點說明、Request/Response 格式
-
-**檔案**：
-- `API_DOCUMENTATION.md` - 完整 API 文件
-
-**使用時機**：
-- 呼叫 API 前查閱
-- 設計新 API 時參考
-- 整合測試時使用
-
-### 🔍 research/ - 研究文件
-**用途**：技術研究、官方文件摘要、標準規範
-
-**檔案**：
-- `SHOPLINE_API_RESEARCH.md` - SHOPLINE API 研究
-- `SHOPLINE_API_TEST_RESULTS.md` - API 測試結果
-- `SHOPLINE_STANDARDS.md` - SHOPLINE 標準
-
-**使用時機**：
-- 研究新功能時
-- 查閱官方規範
-- 驗證 API 行為
-
-### 📊 status/ - 狀態文件
-**用途**：系統狀態、部署記錄、問題追蹤
-
-**檔案**：
-- `PROCESSING_STATUS.md` - 處理狀態和日誌
-- `VERCEL_DEPLOYMENT_COMPLETE.md` - Vercel 部署完整記錄
-- `VERCEL_DEPLOYMENT_NOTES.md` - Vercel 部署筆記
-- `VERCEL_DEPLOYMENT_STATUS.md` - Vercel 部署狀態
-
-**使用時機**：
-- 查看系統當前狀態
-- 查閱部署歷史
-- 追蹤問題和改進
-
-### 📝 templates/ - 文件範本
-**用途**：標準化的文件範本
-
-**檔案**（待建立）：
-- `SPEC_TEMPLATE.md` - 規格文件範本
-- `TEST_CASE_TEMPLATE.md` - 測試案例範本
-- `SPRINT_PLANNING_TEMPLATE.md` - Sprint 規劃範本
-
-**使用時機**：
-- 建立新規格文件
-- 撰寫測試案例
-- 規劃新 Sprint
-
-## 📖 文件使用規則
-
-### ✅ 應該做的
-
-1. **開始新任務前**
-   - 閱讀 `workflow/DEVELOPMENT_WORKFLOW.md`
-   - 查閱相關的 Sprint 規格文件
-   - 確認架構設計文件
-
-2. **開發過程中**
-   - 參考 API 文件
-   - 查閱研究文件
-   - 遵循開發流程
-
-3. **完成任務後**
-   - 更新狀態文件
-   - 更新 API 文件（如有變更）
-   - 記錄經驗教訓
-
-4. **建立新文件時**
-   - 放在正確的目錄
-   - 使用標準命名規則
-   - 添加到相應的索引
-
-### ❌ 不應該做的
-
-1. **隨意建立文件**
-   - 不要在 `docs/` 根目錄隨意建立文件
-   - 不要使用不一致的命名規則
-   - 不要建立重複的文件
-
-2. **跳過文件階段**
-   - 不要跳過規格文件直接開發
-   - 不要忽略開發流程規範
-   - 不要省略文件更新
-
-3. **文件與實作不一致**
-   - 不要只更新代碼而不更新文件
-   - 不要讓文件過時
-   - 不要忽略變更日誌
-
-## 🔍 快速查找指南
-
-### 我想了解...
-
-#### 系統架構
-→ `architecture/ARCHITECTURE.md`
-
-#### 開發流程
-→ `workflow/DEVELOPMENT_WORKFLOW.md` ⚠️ 必讀
-
-#### 當前 Sprint
-→ `sprints/SPRINT{N}_*.md`
-
-#### API 如何使用
-→ `api/API_DOCUMENTATION.md`
-
-#### SHOPLINE API 規範
-→ `research/SHOPLINE_STANDARDS.md`
-
-#### 系統當前狀態
-→ `status/PROCESSING_STATUS.md`
-
-#### 部署相關
-→ `status/VERCEL_DEPLOYMENT_COMPLETE.md`
-
-## 🔄 文件維護
-
-### 更新頻率
-
-- **status/** - 每次 Sprint 完成時更新
-- **sprints/** - 每個 Sprint 建立新文件
-- **api/** - API 變更時立即更新
-- **architecture/** - 架構變更時更新
-- **workflow/** - 流程改進時更新
-- **research/** - 發現新資訊時更新
-
-### 版本控制
-
-所有文件變更必須：
-1. 提交 Git commit
-2. 寫清楚 commit message
-3. 更新變更日誌（如適用）
-
-## 📞 文件相關問題
-
-### 找不到想要的資訊？
-1. 先查閱 `INDEX.md`
-2. 使用全文搜尋
-3. 查看 `DOCS_SUMMARY.md`
-
-### 不確定放哪裡？
-1. 參考本文件的分類說明
-2. 查看現有文件的組織方式
-3. 詢問團隊成員
-
-### 需要新增文件分類？
-1. 討論並確認需求
-2. 更新本文件
-3. 建立新目錄
-4. 通知團隊成員
+**最後更新**: 2025-10-22  
+**當前狀態**: Phase 0 完成，準備開始 Phase R1 (漸進式重構)  
+**架構版本**: Event-Driven V3.0
 
 ---
 
-**版本**: 1.0.0  
-**最後更新**: 2025-10-21  
-**維護者**: Development Team
+## 🚀 快速開始
 
-**⚠️ 重要提醒：所有 Agent 必須遵循此文件組織規則！**
+### 新進 Agent 必讀 (依序閱讀)
 
+1. **[專案現況](./PROJECT_STATUS.md)** ⭐ 必讀第一份
+   - 當前運作中的功能
+   - 已完成的階段
+   - 下一步要做什麼
+   - 關鍵決策記錄
+
+2. **[Event-Driven 架構 V3](./architecture/EVENT_DRIVEN_ARCHITECTURE_V3.md)** ⭐ 目標架構
+   - 核心設計理念：背骨 + 器官
+   - Standard Event 定義
+   - Connector 設計模式
+   - 完整實作範例
+
+3. **[漸進式重構 Roadmap](./architecture/GRADUAL_REFACTORING_ROADMAP.md)** ⭐ 執行計劃
+   - 如何從現況演進到目標架構
+   - 零停機、零破壞策略
+   - 6 個 Phase 詳細步驟
+
+4. **[三平台 API 對比表](./architecture/THREE_PLATFORM_API_COMPARISON.md)** (參考)
+   - Shopline REST, GraphQL, Next Engine API 完整對比
+
+---
+
+## 📂 文件結構
+
+```
+docs/
+├── README.md                           ← 你在這裡
+├── PROJECT_STATUS.md                   ← ⭐ 專案現況 (新進必讀)
+│
+├── architecture/                       ← 架構設計
+│   ├── EVENT_DRIVEN_ARCHITECTURE_V3.md ← ⭐ 當前目標架構
+│   ├── GRADUAL_REFACTORING_ROADMAP.md  ← ⭐ 重構計劃
+│   └── THREE_PLATFORM_API_COMPARISON.md ← API 對比表
+│
+├── research/                           ← API 研究
+│   ├── SHOPLINE_GRAPHQL_RESEARCH.md    ← Shopline GraphQL 深度研究
+│   ├── NEXT_ENGINE_API_RESEARCH.md     ← Next Engine API 深度研究
+│   └── SHOPLINE_ORDERS_API_NOTES.md    ← Shopline Orders 最佳實踐
+│
+├── sprints/                            ← Sprint 記錄
+│   ├── SPRINT2_COMPLETION_REPORT.md    ← Sprint 2 完成報告
+│   └── SPRINT_PAUSE_NOTICE.md          ← Sprint 暫停說明
+│
+├── status/                             ← 狀態追蹤
+│   └── PROCESSING_STATUS.md            ← 當前處理狀態
+│
+└── archive/                            ← 已過時文件
+    ├── architecture/
+    │   ├── MULTI_PLATFORM_ARCHITECTURE.md      (V1 - 已過時)
+    │   ├── MULTI_PLATFORM_ARCHITECTURE_V2.md   (V2 - 已過時)
+    │   ├── PHASE1_IMPLEMENTATION_PLAN.md       (V1 - 已過時)
+    │   └── PHASE1_IMPLEMENTATION_PLAN_V2.md    (V2 - 已過時)
+    └── research/
+        └── API_STYLES_COMPARISON.md            (已被整合)
+```
+
+---
+
+## 🎯 當前狀態總覽
+
+### ✅ 已完成
+
+#### Phase 0: 研究與架構設計
+- [x] Shopline REST API 研究與測試
+- [x] Shopline GraphQL API 深度研究
+- [x] Next Engine API 深度研究
+- [x] 三平台 API 完整對比
+- [x] Event-Driven 架構設計 V3
+- [x] 漸進式重構 Roadmap
+
+#### Sprint 2: Orders API
+- [x] Shopline Orders API 實作 (Create, Read, Update)
+- [x] Vercel Functions 部署成功
+- [x] 前端測試通過
+
+### 🔄 進行中
+
+**準備開始 Phase R1**: Event Bus 核心建立 (預計 2 天)
+- 不影響現有功能
+- 建立新架構基礎
+- 完整單元測試
+
+### 📋 待執行
+
+詳見 [漸進式重構 Roadmap](./architecture/GRADUAL_REFACTORING_ROADMAP.md)
+
+---
+
+## 🗂️ Archive 說明
+
+### 為什麼有 Archive？
+
+為了保持文件清晰，已過時的文件會移至 `archive/` 目錄：
+
+- **V1, V2 架構文件**: 保留作為演進參考，但不再是執行方向
+- **API Styles Comparison**: 內容已整合到 THREE_PLATFORM_API_COMPARISON.md
+
+### Archive 文件的用途
+
+1. **歷史參考**: 了解架構演進過程
+2. **決策記錄**: 為什麼從 V1 → V2 → V3
+3. **概念借鑒**: 某些概念在 V1/V2 中仍有價值
+
+### ⚠️ 重要提醒
+
+**不要使用 Archive 中的文件作為實作依據！**
+
+如果需要了解為什麼做某個決策，請查閱：
+- [PROJECT_STATUS.md](./PROJECT_STATUS.md) - 關鍵決策記錄
+- Archive 文件 - 歷史演進過程
+
+---
+
+## 📖 各類文件說明
+
+### 架構文件 (architecture/)
+
+#### EVENT_DRIVEN_ARCHITECTURE_V3.md ⭐
+**狀態**: 當前目標架構  
+**用途**: 
+- 理解 Event-Driven 設計理念
+- Standard Event 定義
+- Connector 實作範例
+- 完整的技術規範
+
+**何時閱讀**: 開始實作前必讀
+
+#### GRADUAL_REFACTORING_ROADMAP.md ⭐
+**狀態**: 執行中  
+**用途**:
+- 如何從現況演進到目標架構
+- 6 個 Phase 的詳細步驟
+- 回滾策略
+- 驗收標準
+
+**何時閱讀**: 每個 Phase 開始前
+
+#### THREE_PLATFORM_API_COMPARISON.md
+**狀態**: 參考文件  
+**用途**:
+- Shopline REST, GraphQL, Next Engine 完整對比
+- ID / Filter / Pagination 轉換邏輯
+- Webhook / Push 處理差異
+
+**何時閱讀**: 實作 Connector 時參考
+
+---
+
+### 研究文件 (research/)
+
+#### SHOPLINE_GRAPHQL_RESEARCH.md
+**內容**: 
+- GraphQL Schema 完整分析
+- Products API 詳細規範
+- **關鍵發現**: Orders API 不支援 GraphQL
+- GID 格式轉換邏輯
+
+#### NEXT_ENGINE_API_RESEARCH.md
+**內容**:
+- REST API 架構分析
+- OAuth-like 認證流程
+- **自動 Token 更新機制**
+- **主動推送式庫存更新** (獨特設計)
+- 受注伝票 (Orders) API
+- 商品マスタ (Products) API
+
+#### SHOPLINE_ORDERS_API_NOTES.md
+**內容**:
+- Orders API 最佳實踐
+- location_id 是可選的
+- 測試經驗總結
+
+---
+
+### Sprint 文件 (sprints/)
+
+#### SPRINT2_COMPLETION_REPORT.md
+**內容**:
+- Sprint 2 完整報告
+- 功能清單
+- 修正的問題
+- 測試結果
+- 學到的經驗
+
+#### SPRINT_PAUSE_NOTICE.md
+**內容**:
+- 為什麼暫停 Sprint 3
+- 轉向架構重構
+- Phase 0 研究啟動
+
+---
+
+## 🔧 開發工作流程
+
+### 1. 開始新的 Phase
+
+```bash
+# 1. 閱讀對應的 Phase 文件
+# 2. 確認當前功能正常運作
+npm start  # 測試現有功能
+
+# 3. 建立新分支 (建議)
+git checkout -b phase-r1-event-bus
+
+# 4. 開始實作
+```
+
+### 2. 實作過程
+
+```bash
+# 頻繁測試
+npm test
+
+# 檢查現有功能
+npm start
+
+# 提交代碼
+git add .
+git commit -m "phase-r1: implement event bus core"
+```
+
+### 3. Phase 完成
+
+```bash
+# 1. 確認所有驗收標準通過
+# 2. 更新 PROJECT_STATUS.md
+# 3. 合併分支
+git checkout main
+git merge phase-r1-event-bus
+git push
+```
+
+---
+
+## 🆘 遇到問題？
+
+### 常見問題
+
+**Q: 不確定從哪裡開始？**  
+A: 依序閱讀：PROJECT_STATUS.md → EVENT_DRIVEN_ARCHITECTURE_V3.md → GRADUAL_REFACTORING_ROADMAP.md
+
+**Q: 現有功能在哪裡？**  
+A: 查看 PROJECT_STATUS.md 的「運作中的功能」章節
+
+**Q: 為什麼有這麼多版本的架構文件？**  
+A: 架構經過多次演進 (V1 → V2 → V3)，舊版本在 archive/ 中保留參考
+
+**Q: 實作時應該參考哪份文件？**  
+A: 只參考 EVENT_DRIVEN_ARCHITECTURE_V3.md 和 GRADUAL_REFACTORING_ROADMAP.md
+
+**Q: 如何確保不破壞現有功能？**  
+A: 遵循 GRADUAL_REFACTORING_ROADMAP.md 的「雙模式並存」策略
+
+---
+
+## 📝 文件維護
+
+### 何時更新文件？
+
+- **PROJECT_STATUS.md**: 每個 Phase 完成後更新
+- **架構文件**: 架構有重大調整時更新 (謹慎)
+- **研究文件**: 發現新的 API 行為時補充
+- **Sprint 文件**: Sprint 開始/結束時建立/更新
+
+### 文件 Archive 流程
+
+當文件過時時：
+
+```bash
+# 1. 移至 archive
+mkdir -p docs/archive/architecture
+git mv docs/architecture/OLD_FILE.md docs/archive/architecture/
+
+# 2. 在 archive 文件頂部加上過時說明
+# 3. 更新 README.md 的 Archive 說明
+# 4. 提交
+git commit -m "docs: archive outdated architecture document"
+```
+
+---
+
+## 🎯 關鍵原則
+
+1. **單一真相來源**: 只有一份「當前」架構文件
+2. **清晰的狀態標示**: 每份文件都標明是否為當前、參考或過時
+3. **完整的 Archive 機制**: 舊文件保留但明確標示
+4. **新進 Agent 友善**: 5 分鐘內能找到需要的資訊
+
+---
+
+**需要協助？查看 PROJECT_STATUS.md 的「聯絡資訊」章節**
+
+---
+
+**Last Updated**: 2025-10-22  
+**Maintained by**: Development Team  
+**Status**: ✅ Active

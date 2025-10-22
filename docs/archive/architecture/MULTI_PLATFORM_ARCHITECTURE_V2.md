@@ -1,8 +1,23 @@
 # 多平台 Connector 架構設計 V2.0
 
+> ⚠️ **此文件已過時** (Archived on 2025-10-22)
+> 
+> **當前版本**: [Event-Driven 架構 V3.0](../EVENT_DRIVEN_ARCHITECTURE_V3.md)
+> 
+> **為什麼過時**:
+> - V2 採用 Platform 抽象層，但 Service Layer 仍需知道平台細節
+> - 新增端點可能影響核心邏輯
+> - V3 採用 Event-Driven 架構，核心完全不依賴平台
+> 
+> **保留原因**: 作為架構演進參考，理解從 V2 → V3 的決策過程
+> 
+> **實作請參考**: [Event-Driven 架構 V3](../EVENT_DRIVEN_ARCHITECTURE_V3.md)
+
+---
+
 ## 📋 文件資訊
 
-- **版本**: 2.0.0
+- **版本**: 2.0.0 (已過時)
 - **建立日期**: 2025-10-22
 - **狀態**: ✅ **基於三方 API 深度研究完成**
 - **目標**: 支援 Shopline (REST + GraphQL) + Next Engine 的統一 Connector
