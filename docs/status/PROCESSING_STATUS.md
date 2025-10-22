@@ -10,10 +10,11 @@
 - **API 端點**: ✅ 全部正常
 
 ### 最後更新
-- **時間**: 2025-10-21 21:55:00
+- **時間**: 2025-10-22 10:45:00
 - **版本**: 2.2.0
-- **狀態**: ✅ Sprint 2 完成 - Orders API 已部署到 Vercel
+- **狀態**: ✅ Sprint 2 完成 - Orders API 已部署並測試通過
 - **正式網址**: https://shopline-custom-app.vercel.app
+- **Sprint 報告**: [SPRINT2_COMPLETION_REPORT.md](./SPRINT2_COMPLETION_REPORT.md)
 
 ## 🔄 處理流程狀態
 
@@ -78,8 +79,8 @@ Access token 獲取成功
 - **Environment**: development
 
 ### 資料庫配置
-- **類型**: SQLite
-- **檔案**: /Users/morrisli/Projects/custom-app/data/shopline_oauth.db
+- **類型**: PostgreSQL (Prisma Postgres)
+- **環境**: Vercel 生產環境
 - **狀態**: 連線正常
 - **表格**: oauth_tokens (已建立)
 
@@ -258,11 +259,36 @@ sqlite3 data/shopline_oauth.db "SELECT * FROM oauth_tokens;"
 - [x] 本地後端測試 (`scripts/test-orders-api.js`) - 全部通過
 - [x] 本地前端測試 (localhost:3000) - 全部通過
 - [x] Vercel 部署 - 成功
-- [x] Vercel 環境測試 - 待用戶確認
+- [x] Vercel Orders API 測試 - ✅ 建立訂單成功
 
-**Sprint 2 (v2.2.0) 完成！**
+### 🔧 修正的問題
+1. ✅ 缺少 `getProducts()` 方法 - 已新增標準 CRUD 方法
+2. ✅ API 回應結構解析錯誤 - 從 `data.data.products` 改為 `data.products`
+3. ✅ 無效 location_id - 已移除，使用 Shopline 預設值
+4. ✅ 代碼不一致性 - 統一 require 路徑和方法命名
+5. ✅ 缺少 vercel.json 路由 - 已新增所有 Orders API 路由
 
-### 🎯 下一個 Sprint
-- [ ] 優化前端 UI 結果呈現
-- [ ] 增加完整的錯誤處理和日誌
-- [ ] CI/CD 自動化測試
+**Sprint 2 (v2.2.0) 完成！** - 詳見 [Sprint 2 完成報告](./SPRINT2_COMPLETION_REPORT.md)
+
+### 🎯 Sprint 3 規劃（待討論）
+以下是候選主題，請用戶選擇：
+
+#### 選項 1: 完善 Orders API
+- 增加訂單搜尋和篩選
+- 訂單狀態管理流程
+- 批量操作功能
+
+#### 選項 2: 前端優化
+- 改進 UI/UX 設計（表格、卡片呈現）
+- 錯誤訊息友善化
+- Loading 狀態和進度提示
+
+#### 選項 3: Customers API
+- 客戶 CRUD 完整實作
+- 前端客戶管理 UI
+- 客戶與訂單關聯
+
+#### 選項 4: 系統優化
+- CI/CD 自動化測試
+- 效能監控和日誌系統
+- 錯誤追蹤和告警
