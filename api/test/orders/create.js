@@ -63,7 +63,8 @@ module.exports = async (req, res) => {
       })
     }
     
-    const products = productsResult.data?.data?.products || []
+    // API 回傳格式: { products: [...] }，直接取 data.products
+    const products = productsResult.data?.products || []
     console.log(`📦 [建立訂單] 找到 ${products.length} 個商品`)
     
     if (products.length === 0) {

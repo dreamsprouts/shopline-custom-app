@@ -165,7 +165,8 @@ app.post('/api/test/orders', async (req, res) => {
     }
     
     // 取得第一個商品的 variant_id
-    const products = productsResult.data?.data?.products || []
+    // API 回傳格式: { products: [...] }，直接取 data.products
+    const products = productsResult.data?.products || []
     if (products.length === 0) {
       return res.status(400).json({
         success: false,
