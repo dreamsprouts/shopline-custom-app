@@ -26,6 +26,7 @@ open http://localhost:3000
 - **[docs/architecture/ARCHITECTURE.md](./docs/architecture/ARCHITECTURE.md)** - 系統架構和設計
 - **[docs/architecture/VERCEL_ARCHITECTURE.md](./docs/architecture/VERCEL_ARCHITECTURE.md)** - ⚠️ **必讀** Vercel 架構說明
 - **[docs/research/SHOPLINE_STANDARDS.md](./docs/research/SHOPLINE_STANDARDS.md)** - SHOPLINE 平台標準代碼
+- **[docs/research/SHOPLINE_ORDERS_API_NOTES.md](./docs/research/SHOPLINE_ORDERS_API_NOTES.md)** - ⚠️ **測試必讀** Orders API 測試筆記
 - **[docs/api/API_DOCUMENTATION.md](./docs/api/API_DOCUMENTATION.md)** - API 端點文件
 
 ### 🚀 部署文件
