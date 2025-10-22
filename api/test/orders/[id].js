@@ -4,8 +4,7 @@
  * PUT /api/test/orders/[id] - 更新訂單
  */
 
-const path = require('path')
-const ShoplineAPIClient = require(path.join(process.cwd(), 'utils', 'shopline-api'))
+const ShoplineAPIClient = require('../../../utils/shopline-api')
 
 module.exports = async (req, res) => {
   // 設定 CORS headers

@@ -23,10 +23,14 @@ module.exports = async (req, res) => {
       }
       
       const accessToken = authHeader.substring(7)
-      
-      // 使用 SHOPLINE API 客戶端測試商品 API
       const apiClient = new ShoplineAPIClient()
-      const result = await apiClient.testProductsAPI(accessToken)
+      
+      // 使用標準 CRUD 方法
+      const result = await apiClient.getProducts(accessToken, {
+        page: 1,
+        limit: 10,
+        status: 'active'
+      })
       
       if (result.success) {
         res.json(result)
@@ -34,10 +38,10 @@ module.exports = async (req, res) => {
         res.status(result.status || 500).json(result)
       }
     } catch (error) {
-      console.error('Products API test error:', error)
+      console.error('Products API error:', error)
       res.status(500).json({ 
         success: false,
-        error: 'API test failed',
+        error: 'Failed to get products',
         message: error.message 
       })
     }
