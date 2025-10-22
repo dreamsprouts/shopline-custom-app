@@ -1,9 +1,73 @@
-# SHOPLINE OAuth 系統
+# Custom App - Multi-Platform Connector
+
+> **Event-Driven 多平台整合系統**
+> 
+> 作為中介層（Middleman）整合電商平台（Shopline）與 OMS（Next Engine）
+
+## 🎯 專案願景
+
+建立一個 **Event-Driven 的多平台 Connector 系統**，支援：
+- **Shopline** (電商平台) - ✅ 已整合
+- **Next Engine** (OMS 訂單管理) - 🔄 整合中
+- **未來**: Shopify, WooCommerce, 其他平台
+
+### 核心能力
+- 🔄 **庫存同步**: NE ↔ Shopline 雙向同步
+- 📦 **訂單管理**: Shopline → Next Engine 訂單推送
+- 🔌 **可擴展性**: 新增端點不影響核心邏輯
+- 👀 **可觀測性**: 所有變化都是可追蹤的事件
+
+---
+
+## 📚 文件中心
+
+**⭐ 新進 Agent 必讀**: [docs/README.md](./docs/README.md) - 完整的文件導航
+
+### 快速導航
+
+#### 核心文件 (必讀)
+1. **[專案現況](./docs/PROJECT_STATUS.md)** ⭐ 第一份必讀
+   - 當前運作中的功能
+   - 已完成的階段
+   - 下一步要做什麼
+
+2. **[Event-Driven 架構 V3](./docs/architecture/EVENT_DRIVEN_ARCHITECTURE_V3.md)** ⭐ 目標架構
+   - 核心設計理念
+   - 完整技術規範
+
+3. **[漸進式重構 Roadmap](./docs/architecture/GRADUAL_REFACTORING_ROADMAP.md)** ⭐ 執行計劃
+   - 如何從現況演進
+   - 零停機策略
+
+#### 開發相關
+- [API 測試端點](#-api-端點) - 當前可用的 API
+- [開發工作流程](./docs/workflow/DEVELOPMENT_WORKFLOW.md)
+- [部署指南](./docs/DEPLOYMENT.md)
+
+---
+
+## ✅ 當前狀態
+
+### 運作中的功能
+- ✅ Shopline OAuth 2.0 授權
+- ✅ 商店資訊查詢
+- ✅ 商品 CRUD
+- ✅ 訂單 CRUD (Create, Read, Update)
+- ✅ Vercel 部署 (Serverless + PostgreSQL)
+
+### 當前階段
+**Phase R1 準備中**: Event Bus 核心建立 (預計 2 天)
+- 不影響現有功能
+- 建立新架構基礎
+
+詳見: [專案現況](./docs/PROJECT_STATUS.md)
+
+---
 
 ## 📋 快速開始
 
 ### 系統概述
-完整的 SHOPLINE Custom App OAuth 2.0 授權系統，包含前端 UI、後端 API、PostgreSQL 資料庫和 Vercel 雲端部署。支援本地開發（ngrok）和正式環境（Vercel）。
+完整的 Multi-Platform Connector 系統，包含前端 UI、後端 API、PostgreSQL 資料庫和 Vercel 雲端部署。支援本地開發（ngrok）和正式環境（Vercel）。
 
 ### 快速啟動
 ```bash
@@ -20,29 +84,14 @@ npm run ngrok
 open http://localhost:3000
 ```
 
-## 📚 文件導航
+## 📚 詳細文件導航
 
-### 🔧 開發文件
-- **[docs/architecture/ARCHITECTURE.md](./docs/architecture/ARCHITECTURE.md)** - 系統架構和設計
-- **[docs/architecture/VERCEL_ARCHITECTURE.md](./docs/architecture/VERCEL_ARCHITECTURE.md)** - ⚠️ **必讀** Vercel 架構說明
-- **[docs/research/SHOPLINE_STANDARDS.md](./docs/research/SHOPLINE_STANDARDS.md)** - SHOPLINE 平台標準代碼
-- **[docs/research/SHOPLINE_ORDERS_API_NOTES.md](./docs/research/SHOPLINE_ORDERS_API_NOTES.md)** - ⚠️ **測試必讀** Orders API 測試筆記
-- **[docs/api/API_DOCUMENTATION.md](./docs/api/API_DOCUMENTATION.md)** - API 端點文件
+完整的文件結構請查看: **[docs/README.md](./docs/README.md)**
 
-### 🚀 部署文件
-- **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** - 部署和維護指南
-- **[GUIDE.md](./GUIDE.md)** - 完整實作指南
-
-### 📊 狀態監控
-- **[docs/status/PROCESSING_STATUS.md](./docs/status/PROCESSING_STATUS.md)** - 處理狀態和日誌
-
-### 📋 開發流程 (⚠️ 強制執行)
-- **[docs/workflow/DEVELOPMENT_WORKFLOW.md](./docs/workflow/DEVELOPMENT_WORKFLOW.md)** - 標準開發流程
-- **[docs/workflow/API_DEVELOPMENT_CHECKLIST.md](./docs/workflow/API_DEVELOPMENT_CHECKLIST.md)** - ⚠️ **新增 API 必讀** 開發檢查清單
-
-### 📖 文件體系
-- **[docs/INDEX.md](./docs/INDEX.md)** - 文件索引和導航
-- **[docs/DOCS_SUMMARY.md](./docs/DOCS_SUMMARY.md)** - 文件體系總結
+### 參考文件
+- [Vercel 架構說明](./docs/architecture/VERCEL_ARCHITECTURE.md)
+- [Shopline Orders API 筆記](./docs/research/SHOPLINE_ORDERS_API_NOTES.md)
+- [開發流程](./docs/workflow/DEVELOPMENT_WORKFLOW.md)
 
 ## 🏗️ 系統架構
 
@@ -75,30 +124,26 @@ open http://localhost:3000
 - ✅ **本地開發環境** - ngrok 隧道支援
 - ✅ **Vercel 雲端部署** - Serverless Functions + Prisma Postgres
 
-## 📋 可用端點
+## 📋 API 端點
 
-### OAuth 端點
+### OAuth 端點 (運作中)
 - `GET /oauth/install` - 啟動授權流程
 - `GET /oauth/callback` - 授權回調
 - `POST /oauth/refresh` - 刷新 Token
 - `POST /oauth/revoke` - 撤銷授權
 
-### 狀態端點
-- `GET /oauth/status` - OAuth 系統狀態
-- `GET /oauth/token-status` - Token 狀態查詢
-
-### 前端端點
-- `GET /` - 前端應用主頁
-- `GET /views/callback.html` - 授權成功頁面
-
-### API 測試端點
-- `GET /api/test/shop` - 測試商店資訊 API
-- `GET /api/test/products` - 測試商品查詢 API
-- `POST /api/test/products` - 測試商品建立 API（含動態 handle 生成）
+### Shopline API 測試 (運作中)
+- `GET /api/test/shop` - 商店資訊查詢
+- `GET /api/test/products` - 商品列表查詢
+- `POST /api/test/products` - 商品建立
+- `POST /api/test/orders/create` - 訂單建立
+- `GET /api/test/orders/list` - 訂單列表查詢
+- `GET /api/test/orders/:id` - 訂單詳情查詢
+- `PUT /api/test/orders/:id` - 訂單更新
 
 ### 系統端點
 - `GET /health` - 健康檢查
-- `GET /api/info` - 應用程式資訊
+- `GET /` - 前端 UI
 
 ## 🤖 Agent 資訊查找
 
@@ -183,7 +228,8 @@ tail -f logs/error.log
 
 ---
 
-**版本**: 2.0.0  
-**最後更新**: 2025-10-21  
-**狀態**: ✅ Vercel 部署成功（PostgreSQL + Serverless Functions）  
-**正式網址**: https://shopline-custom-app.vercel.app
+**版本**: 3.0.0 (Event-Driven 架構)  
+**最後更新**: 2025-10-22  
+**狀態**: ✅ Shopline 功能運作正常，Phase R1 準備中  
+**正式網址**: https://shopline-custom-app.vercel.app  
+**文件中心**: [docs/README.md](./docs/README.md)
