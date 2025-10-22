@@ -112,7 +112,6 @@ module.exports = async (req, res) => {
               amount: "1.00",
               title: "Test Discount"
             },
-            location_id: "6402444512912503764",
             price: "100.00",
             properties: [
               {
