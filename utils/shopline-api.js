@@ -141,6 +141,48 @@ class ShoplineAPIClient {
   }
 
   /**
+   * 查詢商品列表
+   * @param {string} accessToken - Access Token
+   * @param {object} params - 查詢參數 { page, limit, status }
+   * @returns {Object} API 回應
+   */
+  async getProducts(accessToken, params = {}) {
+    try {
+      const url = `${this.baseURL}/admin/openapi/v20260301/products/products.json`
+      
+      const headers = {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+
+      const queryParams = {
+        page: params.page || 1,
+        limit: params.limit || 10,
+        ...(params.status && { status: params.status })
+      }
+
+      const response = await axios.get(url, { 
+        headers,
+        params: queryParams
+      })
+      
+      return {
+        success: true,
+        status: response.status,
+        data: response.data
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      }
+    }
+  }
+
+  /**
    * 測試商品 API 連線
    * @param {string} accessToken - Access Token
    * @returns {Object} API 回應
