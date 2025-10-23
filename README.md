@@ -54,13 +54,19 @@
 - ✅ 商品 CRUD
 - ✅ 訂單 CRUD (Create, Read, Update)
 - ✅ Vercel 部署 (Serverless + PostgreSQL)
+- ✅ Event-Driven 核心 (Phase R1 完成)
 
 ### 當前階段
-**Phase R1 準備中**: Event Bus 核心建立 (預計 2 天)
-- 不影響現有功能
-- 建立新架構基礎
+**Phase R1 已完成** ✅ (2025-10-23)
+- Event Bus 核心建立完成
+- 35 個測試全部通過 (100%)
+- 現有功能完全正常
 
-詳見: [專案現況](./docs/PROJECT_STATUS.md)
+**Phase R2 準備中**: Shopline Source Connector (預計 3 天)
+- 雙寫模式
+- 不影響現有功能
+
+詳見: [Phase R1 完成報告](./docs/status/PHASE_R1_COMPLETION_REPORT.md)
 
 ---
 
@@ -229,7 +235,7 @@ tail -f logs/error.log
 ---
 
 **版本**: 3.0.0 (Event-Driven 架構)  
-**最後更新**: 2025-10-22  
-**狀態**: ✅ Shopline 功能運作正常，Phase R1 準備中  
+**最後更新**: 2025-10-23  
+**狀態**: ✅ Phase R1 完成，Phase R2 準備中  
 **正式網址**: https://shopline-custom-app.vercel.app  
 **文件中心**: [docs/README.md](./docs/README.md)
