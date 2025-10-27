@@ -11,7 +11,24 @@ let eventBusInstance = null
 function getEventBus() {
   if (!eventBusInstance) {
     const config = getEventConfig()
-    eventBusInstance = new InMemoryEventBus()
+    
+    // 建立 Event Store (如果啟用)
+    let eventStore = null
+    if (config.eventStore.enabled && config.eventStore.type === 'postgres') {
+      const database = require('../../utils/database-postgres')
+      eventStore = {
+        append: async (event) => {
+          try {
+            await database.init()
+            await database.saveEvent(event)
+          } catch (error) {
+            console.error('[EventStore] Failed to save event:', error.message)
+          }
+        }
+      }
+    }
+    
+    eventBusInstance = new InMemoryEventBus({ eventStore })
     
     // 根據環境變數設定啟用狀態
     const isEnabled = process.env.USE_EVENT_BUS === 'true'
