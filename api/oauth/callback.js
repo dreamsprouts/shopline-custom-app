@@ -95,9 +95,6 @@ module.exports = async (req, res) => {
     
     console.log('授權碼驗證成功:', code)
     
-    // 初始化資料庫
-    await database.init()
-    
     // 使用授權碼獲取 Access Token
     const tokenUrl = `https://${handle}.myshopline.com/admin/oauth-web/oauth/token`
     const tokenData = {
@@ -123,6 +120,7 @@ module.exports = async (req, res) => {
       console.log('Access token 獲取成功')
       
       // 儲存 Token 到資料庫
+      const database = require('../../utils/database-postgres')
       const tokenInfo = {
         accessToken: tokenResponse.data.access_token,
         refreshToken: tokenResponse.data.refresh_token,
@@ -131,7 +129,13 @@ module.exports = async (req, res) => {
         scope: tokenResponse.data.scope
       }
       
-      await database.saveToken(handle, tokenInfo)
+      try {
+        await database.init()
+        await database.saveToken(handle, tokenInfo)
+      } catch (dbError) {
+        console.error('❌ 資料庫操作失敗:', dbError.message)
+        // 不中斷流程，Token 已取得
+      }
       
       // 重導向到成功頁面
       res.redirect(302, '/views/callback.html')
