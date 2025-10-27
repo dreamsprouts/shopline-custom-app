@@ -12,6 +12,20 @@ const {
   createPricePayload
 } = require('./EventPayloads')
 
+// 建立事件 payload 的通用函數
+function createEventPayload(type, payload, metadata = {}) {
+  return createStandardEvent({
+    type,
+    source: {
+      platform: metadata.source || 'shopline',
+      platformId: payload.id || 'unknown',
+      connector: 'shopline-source'
+    },
+    payload,
+    metadata
+  })
+}
+
 module.exports = {
   // Event Types
   EventTypes,
@@ -20,6 +34,7 @@ module.exports = {
   
   // Standard Event
   createStandardEvent,
+  createEventPayload,
   validateEvent,
   cloneEvent,
   

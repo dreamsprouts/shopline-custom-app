@@ -48,19 +48,33 @@
             const urlParams = new URLSearchParams(window.location.search);
             const shopHandle = urlParams.get('handle'); // 從 URL 獲取 shop handle
 
+            // 檢查是否為重複訪問（防止重複授權）
+            const isRevisit = sessionStorage.getItem('oauth_callback_visited');
+            if (isRevisit) {
+                console.log('檢測到重複訪問 OAuth callback，重定向到首頁');
+                window.location.href = '/';
+                return;
+            }
+
             if (shopHandle) {
                 fetch(`/oauth/token-status?handle=${shopHandle}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.success && data.token) {
-                            document.getElementById('scopeDisplay').textContent = data.token.scope || 'N/A';
-                            document.getElementById('expireTimeDisplay').textContent = new Date(data.token.expireTime).toLocaleString() || 'N/A';
-                            document.getElementById('refreshExpireTimeDisplay').textContent = new Date(data.token.refreshExpireTime).toLocaleString() || 'N/A';
-                        } else {
-                            document.getElementById('scopeDisplay').textContent = '無法獲取 Token 資訊';
-                            document.getElementById('expireTimeDisplay').textContent = '無法獲取 Token 資訊';
-                            document.getElementById('refreshExpireTimeDisplay').textContent = '無法獲取 Token 資訊';
+                            // 檢查是否已經有有效的 Token（防止重複授權）
+                            console.log('檢測到已存在有效 Token，重定向到首頁');
+                            sessionStorage.setItem('oauth_callback_visited', 'true');
+                            window.location.href = '/';
+                            return;
                         }
+                        
+                        // 如果沒有 Token，顯示授權成功頁面
+                        document.getElementById('scopeDisplay').textContent = data.token?.scope || 'N/A';
+                        document.getElementById('expireTimeDisplay').textContent = data.token?.expireTime ? new Date(data.token.expireTime).toLocaleString() : 'N/A';
+                        document.getElementById('refreshExpireTimeDisplay').textContent = data.token?.refreshExpireTime ? new Date(data.token.refreshExpireTime).toLocaleString() : 'N/A';
+                        
+                        // 標記已訪問，防止重複
+                        sessionStorage.setItem('oauth_callback_visited', 'true');
                     })
                     .catch(error => {
                         console.error('Error fetching token status:', error);

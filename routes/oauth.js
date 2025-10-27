@@ -90,38 +90,47 @@ router.get('/callback', async (req, res) => {
     
     // 驗證必要參數
     if (!appkey || !code || !handle || !timestamp || !sign) {
-      return res.status(400).json({ 
-        error: 'Missing required parameters' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Missing required parameters')}&handle=${handle || 'unknown'}`
+      return res.redirect(errorUrl)
     }
     
     // 驗證簽名
     const isValidSignature = verifyGetSignature(req.query, sign, config.app_secret)
     if (!isValidSignature) {
       console.error('回調簽名驗證失敗')
-      return res.status(401).json({ 
-        error: 'Invalid signature' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Invalid signature')}&handle=${handle}`
+      return res.redirect(errorUrl)
     }
     
     // 驗證時間戳
     const isValidTimestamp = verifyTimestamp(timestamp)
     if (!isValidTimestamp) {
       console.error('回調時間戳驗證失敗')
-      return res.status(401).json({ 
-        error: 'Request expired' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Request expired')}&handle=${handle}`
+      return res.redirect(errorUrl)
     }
     
     // 驗證 app key
     if (appkey !== config.app_key) {
       console.error('回調 App key 不匹配')
-      return res.status(401).json({ 
-        error: 'Invalid app key' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Invalid app key')}&handle=${handle}`
+      return res.redirect(errorUrl)
     }
     
     console.log('授權碼驗證成功:', code)
+    
+    // 檢查是否已經有有效的 Token（防止重複授權）
+    try {
+      const existingToken = await database.getToken(handle)
+      if (existingToken) {
+        console.log('已存在有效的 Token，直接跳轉到首頁')
+        // 直接跳轉到首頁，讓用戶看到已授權狀態
+        return res.redirect('/')
+      }
+    } catch (dbError) {
+      console.warn('檢查現有 Token 失敗，繼續授權流程:', dbError)
+      // 資料庫檢查失敗時，繼續正常的授權流程
+    }
     
     // 使用授權碼請求 access token
     try {
@@ -138,29 +147,49 @@ router.get('/callback', async (req, res) => {
           // 即使資料庫儲存失敗，也繼續流程
         }
         
+        // 發佈 OAuth 授權成功事件（僅在首次授權時）
+        try {
+          // 檢查是否為重複授權（通過檢查資料庫中是否已存在相同的 access_token）
+          const existingToken = await database.getToken(handle)
+          const isNewAuthorization = !existingToken || existingToken.accessToken !== tokenResponse.data.access_token
+          
+          if (isNewAuthorization) {
+          const { ShoplineSourceConnector } = require('../connectors/shopline/source/ShoplineSourceConnector')
+          const sourceConnector = new ShoplineSourceConnector()
+            console.log('🔍 [OAuth] 準備發佈授權成功事件 (首次授權):', {
+            tokenResponse: tokenResponse,
+            code: code ? `${code.substring(0, 10)}...` : null
+          })
+          await sourceConnector.publishOAuthAuthorizedEvent(tokenResponse, code, null)
+          console.log('✅ [OAuth] 授權成功事件已發佈')
+          } else {
+            console.log('ℹ️ [OAuth] 檢測到重複授權，跳過事件發佈')
+          }
+        } catch (eventError) {
+          console.warn('OAuth 授權事件發佈失敗，但授權已成功:', eventError)
+        }
+        
         // 重定向到美觀的成功頁面
         const successUrl = `/views/callback.html?handle=${handle}`
         res.redirect(successUrl)
       } else {
         console.error('Access token 獲取失敗:', tokenResponse.error)
-        res.status(500).json({
-          success: false,
-          error: tokenResponse.error
-        })
+        // 重定向到錯誤頁面而不是返回 JSON
+        const errorUrl = `/views/error.html?error=${encodeURIComponent(tokenResponse.error)}&handle=${handle}`
+        res.redirect(errorUrl)
       }
     } catch (tokenError) {
       console.error('Token 請求錯誤:', tokenError)
-      res.status(500).json({
-        success: false,
-        error: 'Failed to get access token'
-      })
+      // 重定向到錯誤頁面而不是返回 JSON
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Failed to get access token')}&handle=${handle}`
+      res.redirect(errorUrl)
     }
     
   } catch (error) {
     console.error('授權回調處理錯誤:', error)
-    res.status(500).json({ 
-      error: 'Internal server error' 
-    })
+    // 重定向到錯誤頁面而不是返回 JSON
+    const errorUrl = `/views/error.html?error=${encodeURIComponent('Internal server error')}&handle=${req.query.handle || 'unknown'}`
+    res.redirect(errorUrl)
   }
 })
 
@@ -192,16 +221,17 @@ async function requestAccessToken(authorizationCode, handle) {
         data: response.data.data
       }
     } else {
+      console.error('Token 請求失敗:', response.data)
       return {
         success: false,
-        error: response.data.message || 'Token request failed'
+        error: response.data.message || response.data.error || 'Token request failed'
       }
     }
   } catch (error) {
     console.error('Token 請求錯誤:', error.response?.data || error.message)
     return {
       success: false,
-      error: error.response?.data?.message || error.message
+      error: error.response?.data?.message || error.response?.data?.error || error.message
     }
   }
 }

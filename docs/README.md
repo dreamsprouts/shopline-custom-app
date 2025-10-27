@@ -1,8 +1,8 @@
 # Custom App 文件中心
 
-**最後更新**: 2025-10-22  
-**當前狀態**: Phase 0 完成，準備開始 Phase R1 (漸進式重構)  
-**架構版本**: Event-Driven V3.0
+**最後更新**: 2025-10-27  
+**當前狀態**: Phase R2 完成，Shopline Source Connector 已建立  
+**架構版本**: Event-Driven V3.0 (部分實作)
 
 ---
 
@@ -49,19 +49,29 @@ docs/
 │   ├── NEXT_ENGINE_API_RESEARCH.md     ← Next Engine API 深度研究
 │   └── SHOPLINE_ORDERS_API_NOTES.md    ← Shopline Orders 最佳實踐
 │
+├── api/                                ← API 文件
+│   └── API_DOCUMENTATION.md            ← 完整 API 端點文件
+│
 ├── sprints/                            ← Sprint 記錄
 │   ├── SPRINT2_COMPLETION_REPORT.md    ← Sprint 2 完成報告
 │   └── SPRINT_PAUSE_NOTICE.md          ← Sprint 暫停說明
 │
 ├── status/                             ← 狀態追蹤
-│   └── PROCESSING_STATUS.md            ← 當前處理狀態
+│   ├── PHASE_R1_COMPLETION_REPORT.md  ← Phase R1 完成報告
+│   ├── PHASE_R2_COMPLETION_REPORT.md  ← Phase R2 完成報告
+│   └── SPRINT2_COMPLETION_REPORT.md   ← Sprint 2 完成報告
 │
 └── archive/                            ← 已過時文件
     ├── architecture/
     │   ├── MULTI_PLATFORM_ARCHITECTURE.md      (V1 - 已過時)
     │   ├── MULTI_PLATFORM_ARCHITECTURE_V2.md   (V2 - 已過時)
     │   ├── PHASE1_IMPLEMENTATION_PLAN.md       (V1 - 已過時)
-    │   └── PHASE1_IMPLEMENTATION_PLAN_V2.md    (V2 - 已過時)
+    │   ├── PHASE1_IMPLEMENTATION_PLAN_V2.md    (V2 - 已過時)
+    │   └── PHASE1_IMPLEMENTATION_PLAN_V3.md    (V3 - 已過時，轉向 Phase R1-R3)
+    ├── status/
+    │   └── PROCESSING_STATUS.md                (已過時，轉向 Phase R1-R3)
+    ├── sprints/
+    │   └── SPRINT3_PLANNING.md                 (已過時，轉向 Phase R1-R3)
     └── research/
         └── API_STYLES_COMPARISON.md            (已被整合)
 ```
@@ -85,12 +95,28 @@ docs/
 - [x] Vercel Functions 部署成功
 - [x] 前端測試通過
 
+#### Phase R1: Event Bus 核心建立
+- [x] Standard Event 定義與實作
+- [x] InMemoryEventBus 核心功能
+- [x] Event Monitor Dashboard (SSE 訂閱模式)
+- [x] 事件持久化 (PostgreSQL)
+- [x] 測試事件發布功能
+- [x] 統計數字顯示 (資料庫總數 + log 區域統計)
+
+#### Phase R2: Shopline Source Connector
+- [x] Shopline Source Connector 實作
+- [x] 雙寫模式 (原有 API + 事件發布)
+- [x] 事件轉換器 (API 回應 → Standard Events)
+- [x] 功能開關控制
+- [x] 完整測試覆蓋 (100% 通過率)
+- [x] 零破壞性整合
+
 ### 🔄 進行中
 
-**準備開始 Phase R1**: Event Bus 核心建立 (預計 2 天)
-- 不影響現有功能
-- 建立新架構基礎
-- 完整單元測試
+**準備開始 Phase R3**: Shopline Target Connector
+- 事件訂閱機制
+- Standard Event 到 Shopline API 轉換
+- 選擇性訂閱功能
 
 ### 📋 待執行
 
@@ -181,6 +207,16 @@ docs/
 - Orders API 最佳實踐
 - location_id 是可選的
 - 測試經驗總結
+
+### API 文件 (api/)
+
+#### API_DOCUMENTATION.md
+**內容**:
+- 完整 API 端點文件
+- OAuth 授權流程 API
+- Event Monitor Dashboard API
+- SSE 事件流端點
+- 測試事件發布端點
 
 ---
 

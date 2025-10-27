@@ -740,6 +740,293 @@ class ShoplineAPIClient {
       }
     }
   }
+
+  /**
+   * Token 刷新
+   * @param {string} refreshToken
+   */
+  async refreshToken(refreshToken) {
+    try {
+      console.log('🔄 開始刷新 Token...')
+      
+      const timestamp = Date.now().toString()
+      const body = JSON.stringify({})
+      const sign = signPostRequest(body, timestamp, this.appSecret)
+      
+      const response = await axios.post(
+        `${this.baseURL}/admin/oauth/token/refresh`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'appkey': this.appKey,
+            'timestamp': timestamp,
+            'sign': sign
+          }
+        }
+      )
+      
+      if (response.data.code === 200) {
+        console.log('✅ Token 刷新成功')
+        return {
+          success: true,
+          data: response.data.data
+        }
+      } else {
+        console.error('❌ Token 刷新失敗:', response.data.message)
+        return {
+          success: false,
+          error: response.data.message || 'Token refresh failed'
+        }
+      }
+    } catch (error) {
+      console.error('❌ Token 刷新錯誤:', error.response?.data || error.message)
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message
+      }
+    }
+  }
+
+  /**
+   * Token 撤銷
+   * @param {string} accessToken
+   */
+  async revokeToken(accessToken) {
+    try {
+      console.log('🗑️ 開始撤銷 Token...')
+      
+      const timestamp = Date.now().toString()
+      const body = JSON.stringify({})
+      const sign = signPostRequest(body, timestamp, this.appSecret)
+      
+      const response = await axios.post(
+        `${this.baseURL}/admin/oauth/token/revoke`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'appkey': this.appKey,
+            'timestamp': timestamp,
+            'sign': sign,
+            'Authorization': `Bearer ${accessToken}`
+          }
+        }
+      )
+      
+      if (response.data.code === 200) {
+        console.log('✅ Token 撤銷成功')
+        return {
+          success: true,
+          data: response.data.data
+        }
+      } else {
+        console.error('❌ Token 撤銷失敗:', response.data.message)
+        return {
+          success: false,
+          error: response.data.message || 'Token revoke failed'
+        }
+      }
+    } catch (error) {
+      console.error('❌ Token 撤銷錯誤:', error.response?.data || error.message)
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message
+      }
+    }
+  }
+
+  /**
+   * OAuth 授權
+   * @param {string} code
+   * @param {string} state
+   */
+  async authorizeOAuth(code, state) {
+    try {
+      console.log('🔐 開始 OAuth 授權...')
+      
+      const timestamp = Date.now().toString()
+      const body = JSON.stringify({ code, state })
+      const sign = signPostRequest(body, timestamp, this.appSecret)
+      
+      const response = await axios.post(
+        `${this.baseURL}/admin/oauth/token/create`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'appkey': this.appKey,
+            'timestamp': timestamp,
+            'sign': sign
+          }
+        }
+      )
+      
+      if (response.data.code === 200) {
+        console.log('✅ OAuth 授權成功')
+        return {
+          success: true,
+          data: response.data.data
+        }
+      } else {
+        console.error('❌ OAuth 授權失敗:', response.data.message)
+        return {
+          success: false,
+          error: response.data.message || 'OAuth authorization failed'
+        }
+      }
+    } catch (error) {
+      console.error('❌ OAuth 授權錯誤:', error.response?.data || error.message)
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message
+      }
+    }
+  }
+
+  /**
+   * OAuth 撤銷
+   * @param {string} accessToken
+   */
+  async revokeOAuth(accessToken) {
+    try {
+      console.log('🚫 開始 OAuth 撤銷...')
+      
+      const timestamp = Date.now().toString()
+      const body = JSON.stringify({})
+      const sign = signPostRequest(body, timestamp, this.appSecret)
+      
+      const response = await axios.post(
+        `${this.baseURL}/admin/oauth/revoke`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'appkey': this.appKey,
+            'timestamp': timestamp,
+            'sign': sign,
+            'Authorization': `Bearer ${accessToken}`
+          }
+        }
+      )
+      
+      if (response.data.code === 200) {
+        console.log('✅ OAuth 撤銷成功')
+        return {
+          success: true,
+          data: response.data.data
+        }
+      } else {
+        console.error('❌ OAuth 撤銷失敗:', response.data.message)
+        return {
+          success: false,
+          error: response.data.message || 'OAuth revoke failed'
+        }
+      }
+    } catch (error) {
+      console.error('❌ OAuth 撤銷錯誤:', error.response?.data || error.message)
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message
+      }
+    }
+  }
+
+  /**
+   * 登入
+   * @param {string} username
+   * @param {string} password
+   */
+  async login(username, password) {
+    try {
+      console.log('👤 開始登入...')
+      
+      const timestamp = Date.now().toString()
+      const body = JSON.stringify({ username, password })
+      const sign = signPostRequest(body, timestamp, this.appSecret)
+      
+      const response = await axios.post(
+        `${this.baseURL}/admin/auth/login`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'appkey': this.appKey,
+            'timestamp': timestamp,
+            'sign': sign
+          }
+        }
+      )
+      
+      if (response.data.code === 200) {
+        console.log('✅ 登入成功')
+        return {
+          success: true,
+          data: response.data.data
+        }
+      } else {
+        console.error('❌ 登入失敗:', response.data.message)
+        return {
+          success: false,
+          error: response.data.message || 'Login failed'
+        }
+      }
+    } catch (error) {
+      console.error('❌ 登入錯誤:', error.response?.data || error.message)
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message
+      }
+    }
+  }
+
+  /**
+   * 登出
+   * @param {string} accessToken
+   */
+  async logout(accessToken) {
+    try {
+      console.log('👋 開始登出...')
+      
+      const timestamp = Date.now().toString()
+      const body = JSON.stringify({})
+      const sign = signPostRequest(body, timestamp, this.appSecret)
+      
+      const response = await axios.post(
+        `${this.baseURL}/admin/auth/logout`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'appkey': this.appKey,
+            'timestamp': timestamp,
+            'sign': sign,
+            'Authorization': `Bearer ${accessToken}`
+          }
+        }
+      )
+      
+      if (response.data.code === 200) {
+        console.log('✅ 登出成功')
+        return {
+          success: true,
+          data: response.data.data
+        }
+      } else {
+        console.error('❌ 登出失敗:', response.data.message)
+        return {
+          success: false,
+          error: response.data.message || 'Logout failed'
+        }
+      }
+    } catch (error) {
+      console.error('❌ 登出錯誤:', error.response?.data || error.message)
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message
+      }
+    }
+  }
 }
 
 module.exports = ShoplineAPIClient

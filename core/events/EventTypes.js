@@ -17,6 +17,7 @@ const EventTypes = {
   PRODUCT_DELETED: 'product.deleted',
   PRODUCT_PUBLISHED: 'product.published',
   PRODUCT_ARCHIVED: 'product.archived',
+  PRODUCT_QUERIED: 'product.queried',
   
   // Order Events
   ORDER_CREATED: 'order.created',
@@ -25,16 +26,30 @@ const EventTypes = {
   ORDER_FULFILLED: 'order.fulfilled',
   ORDER_PAID: 'order.paid',
   ORDER_REFUNDED: 'order.refunded',
+  ORDER_QUERIED: 'order.queried',
   
   // Customer Events
   CUSTOMER_CREATED: 'customer.created',
   CUSTOMER_UPDATED: 'customer.updated',
   CUSTOMER_DELETED: 'customer.deleted',
   
+  // Shop Events
+  SHOP_UPDATED: 'shop.updated',
+  SHOP_QUERIED: 'shop.queried',
+  
   // Price Events
   PRICE_UPDATED: 'price.updated',
   PRICE_PROMOTION_STARTED: 'price.promotion_started',
   PRICE_PROMOTION_ENDED: 'price.promotion_ended',
+  
+  // Authentication Events
+  AUTH_TOKEN_REFRESHED: 'auth.token_refreshed',
+  AUTH_TOKEN_REVOKED: 'auth.token_revoked',
+  AUTH_OAUTH_AUTHORIZED: 'auth.oauth_authorized',
+  AUTH_OAUTH_REVOKED: 'auth.oauth_revoked',
+  AUTH_LOGIN_SUCCESS: 'auth.login_success',
+  AUTH_LOGIN_FAILED: 'auth.login_failed',
+  AUTH_LOGOUT: 'auth.logout',
   
   // Sync Events (Sync Engine 專用)
   SYNC_CONFLICT_DETECTED: 'sync.conflict_detected',

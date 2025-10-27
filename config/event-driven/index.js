@@ -4,5 +4,12 @@
 
 const config = require('./config')
 
-module.exports = config
+function getEventConfig() {
+  return config
+}
+
+module.exports = {
+  ...config,
+  getEventConfig
+}
 

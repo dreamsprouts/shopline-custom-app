@@ -244,7 +244,7 @@ class ShoplineApp {
 ### 每次新增 API 時更新
 1. ✅ 本文件 (VERCEL_ARCHITECTURE.md) - 新增路由對應表
 2. ✅ API_DOCUMENTATION.md - 新增 API 說明
-3. ✅ PROCESSING_STATUS.md - 更新功能清單
+3. ✅ PROJECT_STATUS.md - 更新功能清單
 4. ✅ README.md - 更新端點列表
 
 ## 🔄 **Git 與 Vercel 自動部署**

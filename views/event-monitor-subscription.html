@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Bus Monitor Dashboard - 訂閱模式</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .status-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .status-online {
+            background: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+
+        .status-offline {
+            background: #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn:not(.btn-success):not(.btn-danger):not(.btn-warning) {
+            background: #6c757d;
+            color: white;
+        }
+
+        .events-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+
+        .events-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .events-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .events-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .events-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #007bff;
+            transition: all 0.3s ease;
+        }
+
+        .event-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .event-type {
+            background: #007bff;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .event-source {
+            background: #6c757d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+
+        .event-version {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .event-time {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .event-id {
+            color: #6c757d;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        .event-payload {
+            background: white;
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .event-payload pre {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #495057;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .no-events {
+            text-align: center;
+            color: #6c757d;
+            padding: 40px;
+        }
+
+        .no-events p {
+            margin-bottom: 10px;
+        }
+
+        .subscription-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .subscription-info h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .subscription-info p {
+            color: #1565c0;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">
+        🔌 連接中...
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Event Bus Monitor Dashboard</h1>
+            <p>即時監控 Shopline Source Connector 事件流 (訂閱模式)</p>
+        </div>
+
+        <div class="subscription-info">
+            <h3>📡 訂閱模式說明</h3>
+            <p>✅ 使用 Server-Sent Events (SSE) 實現真正的訂閱模式</p>
+            <p>✅ 事件即時推送，無需輪詢</p>
+            <p>✅ 更高效、更即時的監控體驗</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-indicator status-offline" id="eventBusStatus"></div>
+                <span>Event Bus: <span id="eventBusText">離線</span></span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator status-offline" id="connectorStatus"></div>
+                <span>Source Connector: <span id="connectorText">離線</span></span>
+            </div>
+            <div class="status-item">
+                <span>總事件數: <strong id="totalEvents">0</strong></span>
+            </div>
+            <div class="status-item">
+                <span>訂閱狀態: <strong id="subscriptionStatus">未連接</strong></span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-success" onclick="startSubscription()">📡 開始訂閱</button>
+            <button class="btn btn-danger" onclick="stopSubscription()">⏹️ 停止訂閱</button>
+            <button class="btn" onclick="clearEvents()">🗑️ 清除事件</button>
+            <button class="btn" onclick="testEvent()">🧪 測試事件</button>
+            <button class="btn btn-warning" onclick="refreshEvents()">🔄 手動刷新</button>
+        </div>
+
+        <div class="events-container">
+            <div class="events-header">
+                <div class="events-title">📡 即時事件流</div>
+                <div class="events-stats">
+                    <span>總計: <strong id="totalCount">0</strong></span>
+                    <span>商品: <strong id="productEvents">0</strong></span>
+                    <span>訂單: <strong id="orderEvents">0</strong></span>
+                    <span>最後更新: <strong id="lastEventTime">--:--</strong></span>
+                </div>
+            </div>
+            <div class="events-list" id="eventsList">
+                <div class="no-events">
+                    <p>📡 等待事件中...</p>
+                    <p>請點擊「開始訂閱」按鈕開始監聽事件</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isSubscribed = false;
+        let eventSource = null;
+        let eventCount = 0;
+        let productEventCount = 0;
+        let orderEventCount = 0;
+        let lastEventTime = null;
+
+        // 更新連接狀態
+        function updateConnectionStatus(status, message) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.textContent = message;
+            statusEl.style.background = status === 'connected' ? 'rgba(40, 167, 69, 0.8)' : 'rgba(220, 53, 69, 0.8)';
+        }
+
+        // 更新狀態指示器
+        function updateStatus() {
+            const eventBusStatus = document.getElementById('eventBusStatus');
+            const eventBusText = document.getElementById('eventBusText');
+            const connectorStatus = document.getElementById('connectorStatus');
+            const connectorText = document.getElementById('connectorText');
+            const subscriptionStatus = document.getElementById('subscriptionStatus');
+
+            if (isSubscribed) {
+                eventBusStatus.className = 'status-indicator status-online';
+                eventBusText.textContent = '線上';
+                connectorStatus.className = 'status-indicator status-online';
+                connectorText.textContent = '啟用';
+                subscriptionStatus.textContent = '已連接';
+            } else {
+                eventBusStatus.className = 'status-indicator status-offline';
+                eventBusText.textContent = '離線';
+                connectorStatus.className = 'status-indicator status-offline';
+                connectorText.textContent = '停用';
+                subscriptionStatus.textContent = '未連接';
+            }
+        }
+
+        // 開始訂閱
+        function startSubscription() {
+            if (isSubscribed) return;
+            
+            try {
+                // 建立 Server-Sent Events 連接
+                eventSource = new EventSource('/api/event-monitor/stream');
+                
+                eventSource.onopen = function(event) {
+                    console.log('📡 SSE 連接已建立');
+                    updateConnectionStatus('connected', '🔌 已連接');
+                };
+                
+                eventSource.addEventListener('connected', function(event) {
+                    console.log('📡 訂閱已確認:', event.data);
+                    isSubscribed = true;
+                    updateStatus();
+                });
+                
+                eventSource.addEventListener('event', function(event) {
+                    try {
+                        const eventData = JSON.parse(event.data);
+                        addEvent(eventData);
+                        console.log('📡 收到事件:', eventData.type);
+                    } catch (error) {
+                        console.error('解析事件數據失敗:', error);
+                    }
+                });
+                
+                eventSource.addEventListener('heartbeat', function(event) {
+                    console.log('💓 心跳:', event.data);
+                });
+                
+                eventSource.onerror = function(event) {
+                    console.error('📡 SSE 連接錯誤:', event);
+                    updateConnectionStatus('disconnected', '🔌 連接錯誤');
+                    stopSubscription();
+                };
+                
+                console.log('📡 開始訂閱 Event Bus...');
+                
+            } catch (error) {
+                console.error('建立訂閱失敗:', error);
+                updateConnectionStatus('disconnected', '🔌 訂閱失敗');
+            }
+        }
+
+        // 停止訂閱
+        function stopSubscription() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            
+            isSubscribed = false;
+            updateStatus();
+            updateConnectionStatus('disconnected', '🔌 已斷開');
+            
+            console.log('📡 停止訂閱 Event Bus...');
+        }
+
+        // 添加事件到列表
+        function addEvent(event) {
+            // 檢查是否已經顯示過這個事件
+            const existingEvent = document.querySelector(`[data-event-id="${event.id}"]`);
+            if (existingEvent) return;
+            
+            // 更新計數器
+            eventCount++;
+            if (event.type.includes('product')) productEventCount++;
+            if (event.type.includes('order')) orderEventCount++;
+            lastEventTime = new Date().toLocaleTimeString();
+            updateStats();
+
+            // 添加到事件列表
+            const eventsList = document.getElementById('eventsList');
+            const noEvents = eventsList.querySelector('.no-events');
+            if (noEvents) {
+                noEvents.remove();
+            }
+
+            const eventElement = createEventElement(event);
+            eventsList.insertBefore(eventElement, eventsList.firstChild);
+
+            // 限制顯示的事件數量
+            const events = eventsList.querySelectorAll('.event-item');
+            if (events.length > 50) {
+                events[events.length - 1].remove();
+            }
+        }
+
+        // 創建事件元素
+        function createEventElement(event) {
+            const div = document.createElement('div');
+            div.className = 'event-item';
+            div.setAttribute('data-event-id', event.id);
+            
+            const time = new Date(event.timestamp).toLocaleString();
+            const payload = JSON.stringify(event.payload, null, 2);
+            
+            div.innerHTML = `
+                <div class="event-header">
+                    <div>
+                        <span class="event-type">${event.type}</span>
+                        <span class="event-source">${event.source.platform}</span>
+                        <span class="event-version">v${event.version}</span>
+                    </div>
+                    <div class="event-time">${time}</div>
+                </div>
+                <div class="event-id">ID: ${event.id}</div>
+                <div class="event-payload">
+                    <pre>${payload}</pre>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // 更新統計
+        function updateStats() {
+            document.getElementById('totalEvents').textContent = eventCount;
+            document.getElementById('totalCount').textContent = eventCount;
+            document.getElementById('productEvents').textContent = productEventCount;
+            document.getElementById('orderEvents').textContent = orderEventCount;
+            document.getElementById('lastEventTime').textContent = lastEventTime || '--:--';
+        }
+
+        // 從 API 數據更新統計
+        function updateStatsFromData(stats) {
+            eventCount = stats.total || 0;
+            productEventCount = stats.product_events || 0;
+            orderEventCount = stats.order_events || 0;
+            lastEventTime = stats.last_event_time ? new Date(stats.last_event_time).toLocaleTimeString() : null;
+            updateStats();
+        }
+
+        // 清除事件
+        function clearEvents() {
+            eventCount = 0;
+            productEventCount = 0;
+            orderEventCount = 0;
+            lastEventTime = null;
+            
+            updateStats();
+            
+            const eventsList = document.getElementById('eventsList');
+            eventsList.innerHTML = `
+                <div class="no-events">
+                    <p>📡 等待事件中...</p>
+                    <p>請點擊「開始訂閱」按鈕開始監聽事件</p>
+                </div>
+            `;
+        }
+
+        // 測試事件
+        async function testEvent() {
+            try {
+                const response = await fetch('/api/event-monitor/test-simple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    console.log('測試事件已發送');
+                } else {
+                    console.error('發送測試事件失敗');
+                }
+            } catch (error) {
+                console.error('測試事件錯誤:', error);
+            }
+        }
+
+        // 手動刷新事件
+        async function refreshEvents() {
+            try {
+                const response = await fetch('/api/event-monitor/events');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.events && data.events.length > 0) {
+                        // 清除現有事件顯示
+                        const eventsList = document.getElementById('eventsList');
+                        eventsList.innerHTML = '';
+                        
+                        // 重新顯示所有事件（包括歷史事件）
+                        data.events.forEach(event => addEvent(event));
+                        
+                        // 更新事件計數器
+                        eventCount = data.events.length;
+                        productEventCount = data.events.filter(e => e.type.includes('product')).length;
+                        orderEventCount = data.events.filter(e => e.type.includes('order')).length;
+                        updateStats();
+                    }
+                    // 更新統計數據
+                    if (data.stats) {
+                        updateStatsFromData(data.stats);
+                    }
+                    console.log('事件已刷新');
+                }
+            } catch (error) {
+                console.error('刷新事件失敗:', error);
+                updateConnectionStatus('disconnected', '🔌 刷新失敗');
+            }
+        }
+
+        // 初始化
+        updateStatus();
+        updateConnectionStatus('disconnected', '🔌 未連接');
+        
+        // 頁面關閉時清理
+        window.addEventListener('beforeunload', function() {
+            stopSubscription();
+        });
+    </script>
+</body>
+</html>

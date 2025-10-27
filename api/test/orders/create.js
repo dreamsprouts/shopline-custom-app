@@ -3,7 +3,7 @@
  * POST /api/test/orders/create
  */
 
-const ShoplineAPIClient = require('../../../utils/shopline-api')
+const { ShoplineSourceConnector } = require('../../../connectors/shopline/source/ShoplineSourceConnector')
 
 module.exports = async (req, res) => {
   // 設定 CORS headers
@@ -41,8 +41,8 @@ module.exports = async (req, res) => {
     
     // 1. 先取得商品列表，獲取有效的 variant_id
     console.log('📦 [建立訂單] 開始取得商品列表')
-    const apiClient = new ShoplineAPIClient()
-    const productsResult = await apiClient.getProducts(accessToken, {
+    const sourceConnector = new ShoplineSourceConnector()
+    const productsResult = await sourceConnector.getProducts(accessToken, {
       page: 1,
       limit: 10,
       status: 'active'
@@ -139,7 +139,7 @@ module.exports = async (req, res) => {
     
     // 建立訂單
     console.log('🛒 [建立訂單] 開始建立訂單，payload:', JSON.stringify(orderData, null, 2))
-    const result = await apiClient.createOrder(accessToken, orderData)
+    const result = await sourceConnector.createOrder(accessToken, orderData)
     
     console.log('🛒 [建立訂單] API 回應:', {
       success: result.success,

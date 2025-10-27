@@ -29,6 +29,7 @@ class ShoplineOAuthApp {
 
         // 撤銷授權按鈕
         document.getElementById('revokeAuthBtn').addEventListener('click', () => {
+            console.log('撤銷授權按鈕被點擊')
             this.revokeAuthorization()
         })
 
@@ -346,13 +347,15 @@ class ShoplineOAuthApp {
         this.showLoading('正在刷新 Token...')
         
         try {
-            const response = await fetch('/oauth/refresh', {
+            // 使用新的認證事件 API
+            const response = await fetch('/api/auth/refresh', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.tokenData.accessToken}`
                 },
                 body: JSON.stringify({
-                    handle: this.config.shopHandle
+                    refreshToken: this.tokenData.refreshToken
                 })
             })
             
@@ -370,7 +373,7 @@ class ShoplineOAuthApp {
                 this.tokenData = normalized
                 this.saveToken(normalized)
                 this.showAuthorizedState()
-                this.showSuccess('Token 刷新成功！')
+                this.showSuccess('Token 刷新成功！事件已發佈到 Event Bus')
             } else {
                 this.showError('Token 刷新失敗: ' + (data.error || '未知錯誤'))
             }
@@ -390,43 +393,42 @@ class ShoplineOAuthApp {
         try {
             this.showLoading('正在撤銷授權...')
             
+            // 從資料庫刪除 token
             const response = await fetch('/oauth/revoke', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    handle: this.config.shopHandle 
+                body: JSON.stringify({
+                    handle: this.config.shopHandle
                 })
             })
             
             const data = await response.json()
             
             if (data.success) {
+                // 發佈撤銷事件（在後端處理）
+                try {
+                    await fetch('/api/auth/revoke', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.tokenData.accessToken}`
+                        },
+                        body: JSON.stringify({
+                            accessToken: this.tokenData.accessToken
+                        })
+                    })
+                } catch (eventError) {
+                    console.warn('事件發佈失敗，但撤銷已成功:', eventError)
+                }
+                
+                // 清除前端狀態
                 this.tokenData = null
                 localStorage.removeItem('shopline_token')
                 
-                document.getElementById('authorizedState').classList.add('hidden')
-                document.getElementById('notAuthorizedState').classList.remove('hidden')
-                
-                this.updateTokenStatus('無', 'none')
-                
-                // 禁用 API 測試按鈕（存在才處理）
-                const testShopBtn = document.getElementById('testShopBtn')
-                const createProductBtn = document.getElementById('createProductBtn')
-                const testProductsBtn = document.getElementById('testProductsBtn')
-                const createOrderBtn = document.getElementById('createOrderBtn')
-                const getOrdersBtn = document.getElementById('getOrdersBtn')
-                const getOrderDetailBtn = document.getElementById('getOrderDetailBtn')
-                const updateOrderBtn = document.getElementById('updateOrderBtn')
-                
-                if (testShopBtn) testShopBtn.disabled = true
-                if (createProductBtn) createProductBtn.disabled = true
-                if (testProductsBtn) testProductsBtn.disabled = true
-                if (createOrderBtn) createOrderBtn.disabled = true
-                if (getOrdersBtn) getOrdersBtn.disabled = true
-                if (getOrderDetailBtn) getOrderDetailBtn.disabled = true
-                if (updateOrderBtn) updateOrderBtn.disabled = true
+                // 更新顯示狀態
+                this.updateTokenDisplay()
                 
                 this.showSuccess('授權已撤銷，Token 資料已清除。')
             } else {

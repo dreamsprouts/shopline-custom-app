@@ -1,5 +1,5 @@
 // Vercel Function: 測試商品 API (GET)
-const ShoplineAPIClient = require('../../utils/shopline-api')
+const { ShoplineSourceConnector } = require('../../connectors/shopline/source/ShoplineSourceConnector')
 
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json')
@@ -23,10 +23,10 @@ module.exports = async (req, res) => {
       }
       
       const accessToken = authHeader.substring(7)
-      const apiClient = new ShoplineAPIClient()
+      const sourceConnector = new ShoplineSourceConnector()
       
-      // 使用標準 CRUD 方法
-      const result = await apiClient.getProducts(accessToken, {
+      // 使用 Source Connector (會自動發佈事件)
+      const result = await sourceConnector.getProducts(accessToken, {
         page: 1,
         limit: 10,
         status: 'active'
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
       }
 
       const accessToken = authHeader.substring(7)
-      const apiClient = new ShoplineAPIClient()
+      const sourceConnector = new ShoplineSourceConnector()
 
       const payload = req.body?.product ? req.body : {
         product: {
@@ -89,7 +89,7 @@ module.exports = async (req, res) => {
         }
       }
 
-      const result = await apiClient.createProduct(accessToken, payload)
+      const result = await sourceConnector.createProduct(accessToken, payload)
       if (result.success) {
         res.json(result)
       } else {

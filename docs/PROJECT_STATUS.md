@@ -1,9 +1,9 @@
 # 專案現況 (Project Status)
 
-**最後更新**: 2025-10-22  
-**當前階段**: Phase 0 完成，準備 Phase R1  
+**最後更新**: 2025-10-27  
+**當前階段**: Phase R2 完成 - Shopline Source Connector 已建立  
 **架構版本**: Event-Driven V3.0  
-**運作狀態**: ✅ Shopline 功能正常運作
+**運作狀態**: ✅ Shopline 功能正常運作 + Event Bus 整合完成 + Source Connector 運作中
 
 ---
 
@@ -31,11 +31,12 @@
 - ✅ Token 儲存 (PostgreSQL)
 - ✅ Token 刷新機制
 
-### Shopline API
-- ✅ 商店資訊查詢 (`GET /api/test/shop`)
-- ✅ 商品列表查詢 (`GET /api/test/products`)
-- ✅ 訂單建立 (`POST /api/test/orders/create`)
-- ✅ 訂單列表查詢 (`GET /api/test/orders/list`)
+### Shopline API (已整合 Event Bus)
+- ✅ 商店資訊查詢 (`GET /api/test/shop`) → 自動發佈 `shop.updated` 事件
+- ✅ 商品列表查詢 (`GET /api/test/products`) → 自動發佈 `product.updated` 事件  
+- ✅ 商品建立 (`POST /api/test/products`) → 自動發佈 `product.created` 事件
+- ✅ 訂單建立 (`POST /api/test/orders/create`) → 自動發佈 `order.created` 事件
+- ✅ 訂單列表查詢 (`GET /api/test/orders/list`) → 自動發佈 `order.updated` 事件
 - ✅ 訂單詳情查詢 (`GET /api/test/orders/:id`)
 - ✅ 訂單更新 (`PUT /api/test/orders/:id`)
 
@@ -44,10 +45,19 @@
 - ✅ Production: Vercel Serverless Functions
 - ✅ Database: Prisma Postgres (Vercel)
 
+### Event Bus 系統
+- ✅ Event Bus 核心 (`core/event-bus/`)
+- ✅ Standard Events 定義 (`core/events/`)
+- ✅ Shopline Source Connector (`connectors/shopline/source/`)
+- ✅ 雙寫模式 (Dual-Write) - 現有 API 正常運作 + 自動發佈事件
+- ✅ Event Monitor Dashboard (`/event-monitor`) - 即時監控事件流
+- ✅ 事件持久化 (PostgreSQL `events` 表)
+
 ### 前端 UI
 - ✅ 授權按鈕
 - ✅ 商店資訊查詢
 - ✅ 商品列表查詢
+- ✅ Event Monitor Dashboard 連結
 - ✅ 訂單建立測試
 
 ---
@@ -82,19 +92,49 @@
 
 ---
 
-### 🔄 Phase R1: Event Bus 核心 (準備開始)
+### ✅ Phase R1: Event Bus 核心 (已完成)
 
 **預計時間**: 2 天  
+**實際時間**: 2 天  
+**狀態**: ✅ 已完成  
+**影響範圍**: **不影響現有功能**
+
+**成就**:
+- ✅ 建立 Event Bus 核心基礎設施
+- ✅ Standard Event 定義
+- ✅ 功能開關機制
+- ✅ 完整單元測試
+- ✅ Event Monitor Dashboard (SSE 訂閱模式)
+
+**完成報告**: [Phase R1 完成報告](./status/PHASE_R1_COMPLETION_REPORT.md)
+
+### ✅ Phase R2: Shopline Source Connector (已完成)
+
+**預計時間**: 3 天  
+**實際時間**: < 1 天  
+**狀態**: ✅ 已完成  
+**影響範圍**: **不影響現有功能**
+
+**成就**:
+- ✅ Shopline Source Connector 實作
+- ✅ 雙寫模式 (原有 API + 事件發布)
+- ✅ 事件轉換器 (API 回應 → Standard Events)
+- ✅ 功能開關控制
+- ✅ 100% 測試覆蓋率
+
+**完成報告**: [Phase R2 完成報告](./status/PHASE_R2_COMPLETION_REPORT.md)
+
+### 🔄 Phase R3: Shopline Target Connector (準備開始)
+
+**預計時間**: 3 天  
 **狀態**: 準備中  
 **影響範圍**: **不影響現有功能**
 
 **目標**:
-- 建立 Event Bus 核心基礎設施
-- Standard Event 定義
-- 功能開關機制
-- 完整單元測試
-
-**實施文件**: [漸進式重構 Roadmap - Phase R1](./architecture/GRADUAL_REFACTORING_ROADMAP.md#phase-r1-event-bus-核心-2-天---不影響現有功能)
+- 實作 Shopline Target Connector
+- 建立事件訂閱機制
+- Standard Event 到 Shopline API 轉換
+- 選擇性訂閱功能
 
 **驗收標準**:
 - [ ] Event Bus 單元測試通過

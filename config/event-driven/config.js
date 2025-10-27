@@ -5,20 +5,30 @@
 
 const config = {
   // Event Bus 核心開關
-  enabled: process.env.USE_EVENT_BUS === 'true',
-  
-  // Event Bus 類型
-  busType: process.env.EVENT_BUS_TYPE || 'memory', // 'memory' | 'redis' (未來)
-  
-  // 是否記錄所有事件
-  logEvents: process.env.LOG_EVENTS !== 'false', // 預設為 true
+  eventBus: {
+    enabled: process.env.USE_EVENT_BUS === 'true',
+    type: process.env.EVENT_BUS_TYPE || 'memory', // 'memory' | 'redis' (未來)
+    logEvents: process.env.LOG_EVENTS !== 'false' // 預設為 true
+  },
   
   // Connector 開關
   connectors: {
-    shoplineSource: process.env.ENABLE_SHOPLINE_SOURCE === 'true',
-    shoplineTarget: process.env.ENABLE_SHOPLINE_TARGET === 'true',
-    nextEngineSource: process.env.ENABLE_NEXT_ENGINE_SOURCE === 'true',
-    nextEngineTarget: process.env.ENABLE_NEXT_ENGINE_TARGET === 'true'
+    shopline: {
+      source: {
+        enabled: process.env.ENABLE_SHOPLINE_SOURCE === 'true'
+      },
+      target: {
+        enabled: process.env.ENABLE_SHOPLINE_TARGET === 'true'
+      }
+    },
+    nextEngine: {
+      source: {
+        enabled: process.env.ENABLE_NEXT_ENGINE_SOURCE === 'true'
+      },
+      target: {
+        enabled: process.env.ENABLE_NEXT_ENGINE_TARGET === 'true'
+      }
+    }
   },
   
   // Event Store 配置

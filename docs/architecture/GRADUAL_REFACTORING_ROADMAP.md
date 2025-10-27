@@ -44,9 +44,9 @@ if (USE_EVENT_BUS) {
 ```
 Phase R1: Event Bus 核心 (不影響現有功能)
     ↓
-Phase R2: Shopline Source Connector (Webhook 雙寫)
+Phase R2: Shopline Source Connector (Webhook 雙寫) - **✅ 已完成**
     ↓
-Phase R3: Shopline Target Connector (選擇性訂閱)
+Phase R3: Shopline Target Connector (選擇性訂閱) - **準備開始**
     ↓
 Phase R4: 完全切換到事件驅動
     ↓
@@ -95,14 +95,22 @@ custom-app/
 
 ---
 
-## 🚀 Phase R1: Event Bus 核心 (2 天) - **不影響現有功能**
+## 🚀 Phase R1: Event Bus 核心 (2 天) - **✅ 已完成**
 
 ### 目標
 建立 Event Bus 基礎設施，但**不改動任何現有代碼**。
 
-### 實施步驟
+### 完成狀態
+- [x] Standard Event 定義與實作
+- [x] InMemoryEventBus 核心功能
+- [x] Event Monitor Dashboard (SSE 訂閱模式)
+- [x] 事件持久化 (PostgreSQL)
+- [x] 測試事件發布功能
+- [x] 統計數字顯示 (資料庫總數 + log 區域統計)
 
-#### Step R1.1: 建立新目錄結構 (0.5 天)
+### 實施步驟 (已完成)
+
+#### Step R1.1: 建立新目錄結構 (0.5 天) ✅
 
 ```bash
 # 建立新目錄 (不影響舊代碼)
@@ -177,14 +185,22 @@ module.exports = config;
 
 ---
 
-## 🚀 Phase R2: Shopline Source Connector (3 天) - **雙寫模式**
+## 🚀 Phase R2: Shopline Source Connector (3 天) - **✅ 已完成**
 
 ### 目標
 在**不破壞現有 Webhook 處理**的前提下，**額外**發佈事件到 Event Bus。
 
-### 實施步驟
+### 完成狀態
+- [x] Shopline Source Connector 實作完成
+- [x] 雙寫模式成功整合 (原有 API + 事件發布)
+- [x] 事件轉換器完整實作
+- [x] 功能開關控制正常
+- [x] 100% 測試覆蓋率
+- [x] 零破壞性整合
 
-#### Step R2.1: 實作 Shopline Source Connector (1.5 天)
+### 實施步驟 (已完成)
+
+#### Step R2.1: 實作 Shopline Source Connector (1.5 天) ✅
 
 **檔案**: `connectors/shopline/source/ShoplineSourceConnector.js`
 

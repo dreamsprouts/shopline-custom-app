@@ -202,6 +202,13 @@ class InMemoryEventBus {
     this.enabled = enabled
     console.log(`[EventBus] ${enabled ? 'Enabled' : 'Disabled'}`)
   }
+
+  /**
+   * 檢查 Event Bus 是否啟用
+   */
+  isEnabled() {
+    return this.enabled
+  }
   
   /**
    * 生成訂閱 ID

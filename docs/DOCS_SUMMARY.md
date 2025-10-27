@@ -15,7 +15,7 @@ custom-app/
     ├── SHOPLINE_STANDARDS.md    # SHOPLINE 平台標準代碼
     ├── API_DOCUMENTATION.md     # API 端點文件
     ├── DEPLOYMENT.md            # 部署和維護指南
-    ├── PROCESSING_STATUS.md     # 處理狀態和日誌
+    ├── PROJECT_STATUS.md        # 專案現況
     ├── INFORMATION_SOURCES.md   # 資訊來源管理
     └── DOCS_SUMMARY.md          # 文件體系總結 (本文件)
 └── scripts/
@@ -176,7 +176,7 @@ npm run docs:validate
 - **SHOPLINE_STANDARDS.md**: 12.59KB
 - **API_DOCUMENTATION.md**: 8.60KB
 - **DEPLOYMENT.md**: 7.99KB
-- **PROCESSING_STATUS.md**: 4.17KB
+- **PROJECT_STATUS.md**: 4.17KB
 - **README.md**: 3.39KB
 - **docs/INDEX.md**: 3.21KB
 - **INFORMATION_SOURCES.md**: 1.2KB

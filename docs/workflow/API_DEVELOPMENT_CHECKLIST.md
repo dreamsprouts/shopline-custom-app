@@ -18,6 +18,8 @@
 
 - [ ] **1.4** 更新規格文件 (`docs/sprints/SPRINT*_SPEC.md`)
 
+- [ ] **1.5** 如果是 Event Bus 相關 API，確認事件格式和時間戳
+
 ---
 
 ### 階段 2：實作本地環境
@@ -43,7 +45,12 @@
   curl http://localhost:3000/PATH
   ```
 
-- [ ] **2.4** 確認本地測試通過
+- [ ] **2.4** 如果是 Event Monitor Dashboard API，測試 SSE 連接
+  ```bash
+  curl -N -H "Accept: text/event-stream" http://localhost:3000/api/event-monitor/stream
+  ```
+
+- [ ] **2.5** 確認本地測試通過
 
 ---
 
@@ -134,7 +141,7 @@
   - 新增可用端點列表
 
 - [ ] **5.4** 更新狀態文件
-  - `docs/status/PROCESSING_STATUS.md`
+  - `docs/PROJECT_STATUS.md`
   - 記錄新功能
 
 ---
@@ -246,7 +253,7 @@
 - [x] `API_DOCUMENTATION.md` 新增端點
 - [x] `VERCEL_ARCHITECTURE.md` 新增對應表
 - [x] `README.md` 更新端點列表
-- [x] `PROCESSING_STATUS.md` 記錄功能
+- [x] `PROJECT_STATUS.md` 記錄功能
 
 #### ✅ 部署與測試
 - [x] `git commit -m "feat: add customers API"`

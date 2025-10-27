@@ -13,7 +13,7 @@ custom-app/
     ├── SHOPLINE_API_RESEARCH.md # SHOPLINE API 研究文件
     ├── API_DOCUMENTATION.md   # API 文件
     ├── DEPLOYMENT.md          # 部署指南
-    ├── PROCESSING_STATUS.md   # 處理狀態
+    ├── PROJECT_STATUS.md      # 專案現況
     └── DOCS_SUMMARY.md        # 文件體系總結
 ```
 
@@ -34,13 +34,13 @@ custom-app/
 
 #### 🚀 運維人員
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - 部署和維護指南
-- **[PROCESSING_STATUS.md](./PROCESSING_STATUS.md)** - 系統狀態監控
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - 專案現況監控
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 系統架構理解
 
 #### 🧪 測試人員
 - **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - API 測試端點
 - **[SHOPLINE_STANDARDS.md](./SHOPLINE_STANDARDS.md)** - 標準流程測試
-- **[PROCESSING_STATUS.md](./PROCESSING_STATUS.md)** - 狀態驗證
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - 狀態驗證
 
 ### 按功能查找
 
@@ -52,7 +52,7 @@ custom-app/
 #### 🗄️ 資料庫
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 資料庫架構
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - 資料庫部署
-- **[PROCESSING_STATUS.md](./PROCESSING_STATUS.md)** - 資料庫狀態
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - 資料庫狀態
 
 #### 🌐 API 開發
 - **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - API 文件
@@ -62,7 +62,7 @@ custom-app/
 #### 🚀 部署
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - 部署指南
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 部署架構
-- **[PROCESSING_STATUS.md](./PROCESSING_STATUS.md)** - 部署狀態
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - 部署狀態
 
 ## 📋 文件更新記錄
 
@@ -98,7 +98,7 @@ custom-app/
 ### 技術問題
 - 參考 SHOPLINE_STANDARDS.md
 - 查看 API_DOCUMENTATION.md
-- 檢查 PROCESSING_STATUS.md
+- 檢查 PROJECT_STATUS.md
 
 ---
 

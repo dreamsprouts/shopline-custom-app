@@ -17,7 +17,9 @@ class Database {
       const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL
       
       if (!connectionString) {
-        throw new Error('POSTGRES_URL or DATABASE_URL environment variable is required')
+        console.warn('⚠️  POSTGRES_URL or DATABASE_URL not found, using mock database for development')
+        this.isInitialized = true
+        return Promise.resolve()
       }
 
       this.pool = new Pool({
@@ -61,9 +63,33 @@ class Database {
       )
     `
 
+    const createEventsTable = `
+      CREATE TABLE IF NOT EXISTS events (
+        id BIGSERIAL PRIMARY KEY,
+        event_id VARCHAR(255) NOT NULL UNIQUE,
+        event_type VARCHAR(255) NOT NULL,
+        event_version VARCHAR(50) NOT NULL,
+        source_platform VARCHAR(100) NOT NULL,
+        source_platform_id VARCHAR(255),
+        source_connector VARCHAR(100) NOT NULL,
+        payload JSONB NOT NULL,
+        metadata JSONB,
+        correlation JSONB,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `
+
+    const createEventsIndexes = `
+      CREATE INDEX IF NOT EXISTS idx_events_type ON events (event_type);
+      CREATE INDEX IF NOT EXISTS idx_events_created_at ON events (created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_events_source ON events (source_platform, source_connector);
+    `
+
     try {
       await this.pool.query(createTokensTable)
-      console.log('✅ PostgreSQL 資料表建立成功')
+      await this.pool.query(createEventsTable)
+      await this.pool.query(createEventsIndexes)
+      console.log('✅ PostgreSQL 資料表和索引建立成功')
     } catch (error) {
       console.error('❌ 建立資料表失敗:', error.message)
       throw error
@@ -72,6 +98,11 @@ class Database {
 
   // 儲存或更新 Token
   async saveToken(shopHandle, tokenData) {
+    if (!this.pool) {
+      console.log(`📊 [Mock DB] Token 已記錄: ${shopHandle}`)
+      return { id: 1, changes: 1 }
+    }
+
     try {
       const sql = `
         INSERT INTO oauth_tokens 
@@ -107,6 +138,11 @@ class Database {
 
   // 取得 Token
   async getToken(shopHandle) {
+    if (!this.pool) {
+      console.log(`📊 [Mock DB] 取得 Token: ${shopHandle} (Mock)`)
+      return null
+    }
+
     try {
       const sql = 'SELECT * FROM oauth_tokens WHERE shop_handle = $1'
       const result = await this.pool.query(sql, [shopHandle])
@@ -184,6 +220,104 @@ class Database {
     const now = new Date()
     const expireTime = new Date(tokenData.expireTime)
     return now > expireTime
+  }
+
+  // 儲存事件到資料庫
+  async saveEvent(event) {
+    if (!this.pool) {
+      console.log('📊 [Mock DB] 事件已記錄:', event.type, event.id)
+      return
+    }
+
+    const query = `
+      INSERT INTO events (
+        event_id, event_type, event_version, source_platform, 
+        source_platform_id, source_connector, payload, metadata, correlation
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ON CONFLICT (event_id) DO NOTHING
+    `
+
+    const values = [
+      event.id,
+      event.type,
+      event.version,
+      event.source.platform,
+      event.source.platformId,
+      event.source.connector,
+      JSON.stringify(event.payload),
+      event.metadata ? JSON.stringify(event.metadata) : null,
+      event.correlation ? JSON.stringify(event.correlation) : null
+    ]
+
+    try {
+      await this.pool.query(query, values)
+    } catch (error) {
+      console.error('❌ 儲存事件失敗:', error.message)
+      throw error
+    }
+  }
+
+  // 取得事件列表
+  async getEvents(limit = 50, offset = 0) {
+    if (!this.pool) {
+      console.log('📊 [Mock DB] 取得事件列表 (Mock)')
+      return []
+    }
+
+    const query = `
+      SELECT event_id, event_type, event_version, source_platform, 
+             source_platform_id, source_connector, payload, metadata, 
+             correlation, created_at
+      FROM events 
+      ORDER BY created_at DESC 
+      LIMIT $1 OFFSET $2
+    `
+
+    try {
+      const result = await this.pool.query(query, [limit, offset])
+      return result.rows.map(row => ({
+        id: row.event_id,
+        type: row.event_type,
+        version: row.event_version,
+        source: {
+          platform: row.source_platform,
+          platformId: row.source_platform_id,
+          connector: row.source_connector
+        },
+        payload: row.payload,
+        metadata: row.metadata,
+        correlation: row.correlation,
+        timestamp: row.created_at.toISOString()
+      }))
+    } catch (error) {
+      console.error('❌ 取得事件失敗:', error.message)
+      throw error
+    }
+  }
+
+  // 取得事件統計
+  async getEventStats() {
+    if (!this.pool) {
+      console.log('📊 [Mock DB] 取得事件統計 (Mock)')
+      return { total: 0, product_events: 0, order_events: 0, last_event_time: null }
+    }
+
+    const query = `
+      SELECT 
+        COUNT(*) as total,
+        COUNT(CASE WHEN event_type LIKE 'product.%' THEN 1 END) as product_events,
+        COUNT(CASE WHEN event_type LIKE 'order.%' THEN 1 END) as order_events,
+        MAX(created_at) as last_event_time
+      FROM events
+    `
+
+    try {
+      const result = await this.pool.query(query)
+      return result.rows[0]
+    } catch (error) {
+      console.error('❌ 取得事件統計失敗:', error.message)
+      throw error
+    }
   }
 
   // 關閉資料庫連接

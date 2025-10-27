@@ -43,6 +43,22 @@
     {
       "source": "/api/test/orders/:id",
       "destination": "/api/test/orders/[id]"
+    },
+    {
+      "source": "/event-monitor",
+      "destination": "/views/event-monitor.html"
+    },
+    {
+      "source": "/api/event-monitor/events",
+      "destination": "/api/event-monitor/events"
+    },
+    {
+      "source": "/api/event-monitor/stream",
+      "destination": "/api/event-monitor/stream"
+    },
+    {
+      "source": "/api/event-monitor/test-simple",
+      "destination": "/api/event-monitor/test-simple"
     }
   ],
   "functions": {

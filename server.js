@@ -1,6 +1,14 @@
+// 載入環境變數 - 必須在其他 require 之前
+require('dotenv').config({ path: '.env.local' })
+
+// 強制設定環境變數
+process.env.USE_EVENT_BUS = 'true'
+process.env.ENABLE_SHOPLINE_SOURCE = 'true'
+
 const express = require('express')
 const cors = require('cors')
 const path = require('path')
+
 // 環境變數配置（Vercel 兼容）
 const config = {
   app_key: process.env.APP_KEY || '4c951e966557c8374d9a61753dfe3c52441aba3b',
@@ -13,7 +21,10 @@ const config = {
 const oauthRoutes = require('./routes/oauth')
 // 統一使用 PostgreSQL 資料庫
 const database = require('./utils/database-postgres')
-const ShoplineAPIClient = require('./utils/shopline-api')
+const { ShoplineAPIClientWrapper } = require('./connectors/shopline/source')
+
+// Event Monitor 整合
+const { setupEventMonitor } = require('./api/event-monitor')
 
 const app = express()
 const PORT = config.port || 3000
@@ -55,7 +66,7 @@ app.post('/api/test/products', async (req, res) => {
     }
 
     const accessToken = authHeader.substring(7)
-    const apiClient = new ShoplineAPIClient()
+    const apiClient = new ShoplineAPIClientWrapper()
 
     const payload = req.body?.product ? req.body : {
       product: {
@@ -114,7 +125,7 @@ app.get('/api/test/products', async (req, res) => {
     }
     
     const accessToken = authHeader.substring(7)
-    const apiClient = new ShoplineAPIClient()
+    const apiClient = new ShoplineAPIClientWrapper()
     
     // 使用標準 CRUD 方法
     const result = await apiClient.getProducts(accessToken, {
@@ -153,8 +164,14 @@ app.post('/api/test/orders', async (req, res) => {
     const orderPayload = req.body
     
     // 先獲取商品列表以取得有效的 variant_id
-    const apiClient = new ShoplineAPIClient()
+    const apiClient = new ShoplineAPIClientWrapper()
+    
+    // 暫時停用事件發佈，避免發佈不必要的 product.updated 事件
+    apiClient.setEventBusEnabled(false)
     const productsResult = await apiClient.testProductsAPI(accessToken)
+    
+    // 重新啟用事件發佈，準備建立訂單
+    apiClient.setEventBusEnabled(true)
     
     if (!productsResult.success) {
       return res.status(500).json({
@@ -260,7 +277,7 @@ app.get('/api/test/orders', async (req, res) => {
     }
     
     // 查詢訂單列表
-    const apiClient = new ShoplineAPIClient()
+    const apiClient = new ShoplineAPIClientWrapper()
     const result = await apiClient.getOrders(accessToken, params)
     
     if (result.success) {
@@ -293,7 +310,7 @@ app.get('/api/test/orders/:id', async (req, res) => {
     const orderId = req.params.id
     
     // 查詢訂單詳情
-    const apiClient = new ShoplineAPIClient()
+    const apiClient = new ShoplineAPIClientWrapper()
     const result = await apiClient.getOrderDetail(accessToken, orderId)
     
     if (result.success) {
@@ -327,7 +344,7 @@ app.put('/api/test/orders/:id', async (req, res) => {
     const updatePayload = req.body
     
     // 更新訂單
-    const apiClient = new ShoplineAPIClient()
+    const apiClient = new ShoplineAPIClientWrapper()
     const result = await apiClient.updateOrder(accessToken, orderId, updatePayload)
     
     if (result.success) {
@@ -359,7 +376,7 @@ app.get('/api/test/shop', async (req, res) => {
     const accessToken = authHeader.substring(7)
     
     // 使用 SHOPLINE API 客戶端測試商店資訊 API
-    const apiClient = new ShoplineAPIClient()
+    const apiClient = new ShoplineAPIClientWrapper()
     const result = await apiClient.testShopInfoAPI(accessToken)
     
     if (result.success) {
@@ -391,7 +408,7 @@ app.get('/api/test/all', async (req, res) => {
     const accessToken = authHeader.substring(7)
     
     // 使用 SHOPLINE API 客戶端測試所有 API
-    const apiClient = new ShoplineAPIClient()
+    const apiClient = new ShoplineAPIClientWrapper()
     const result = await apiClient.testAllAPIs(accessToken)
     
     res.json(result)
@@ -409,6 +426,22 @@ app.get('/api/test/all', async (req, res) => {
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'))
 })
+
+// Event Monitor Dashboard
+app.get('/event-monitor', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'event-monitor.html'))
+})
+
+// Event Monitor Dashboard - 訂閱模式
+app.get('/event-monitor-subscription', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'event-monitor-subscription.html'))
+})
+
+// Event Monitor API 路由
+app.get('/api/event-monitor/events', require('./api/event-monitor/events'))
+app.get('/api/event-monitor/stream', require('./api/event-monitor/stream'))
+app.post('/api/event-monitor/test', require('./api/event-monitor/test'))
+app.post('/api/event-monitor/test-simple', require('./api/event-monitor/test-simple'))
 
 // API 資訊端點
 app.get('/api/info', (req, res) => {
@@ -438,6 +471,291 @@ app.get('/health', (req, res) => {
   })
 })
 
+// ==================== 認證事件 API 端點 ====================
+
+// Token 刷新 (帶事件發佈)
+app.post('/api/auth/refresh', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Missing or invalid authorization header' 
+      })
+    }
+
+    const accessToken = authHeader.substring(7)
+    const { refreshToken } = req.body
+
+    if (!refreshToken) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing refreshToken parameter'
+      })
+    }
+
+    // 使用 ShoplineAPIClientWrapper 來發佈事件
+    const apiClient = new ShoplineAPIClientWrapper()
+    const result = await apiClient.refreshToken(refreshToken)
+
+    if (result.success) {
+      // 更新資料庫中的 token 資料
+      try {
+        const handle = 'paykepoc' // 可以從 token 中解析或使用預設值
+        await database.saveToken(handle, result.data)
+      } catch (dbError) {
+        console.error('更新 Token 到資料庫失敗:', dbError)
+      }
+
+      res.json({
+        success: true,
+        data: result.data,
+        message: 'Token 刷新成功，事件已發佈'
+      })
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'Token refresh failed'
+      })
+    }
+  } catch (error) {
+    console.error('Token 刷新錯誤:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    })
+  }
+})
+
+// Token 撤銷 (帶事件發佈)
+app.post('/api/auth/revoke', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Missing or invalid authorization header' 
+      })
+    }
+
+    const accessToken = authHeader.substring(7)
+    const { accessToken: tokenToRevoke } = req.body
+
+    // 使用 ShoplineAPIClientWrapper 來發佈事件
+    const apiClient = new ShoplineAPIClientWrapper()
+    const result = await apiClient.revokeToken(accessToken)
+
+    if (result.success) {
+      // 從資料庫刪除 token 資料
+      try {
+        const handle = 'paykepoc' // 可以從 token 中解析或使用預設值
+        await database.deleteToken(handle)
+      } catch (dbError) {
+        console.error('從資料庫刪除 Token 失敗:', dbError)
+      }
+
+      res.json({
+        success: true,
+        data: result.data,
+        message: 'Token 撤銷成功，事件已發佈'
+      })
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'Token revoke failed'
+      })
+    }
+  } catch (error) {
+    console.error('Token 撤銷錯誤:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    })
+  }
+})
+
+// OAuth 授權 (帶事件發佈)
+app.post('/api/auth/authorize', async (req, res) => {
+  try {
+    const { code, state } = req.body
+
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing authorization code'
+      })
+    }
+
+    // 使用 ShoplineAPIClientWrapper 來發佈事件
+    const apiClient = new ShoplineAPIClientWrapper()
+    const result = await apiClient.authorizeOAuth(code, state)
+
+    if (result.success) {
+      // 儲存 token 資料到資料庫
+      try {
+        const handle = 'paykepoc' // 可以從 token 中解析或使用預設值
+        await database.saveToken(handle, result.data)
+      } catch (dbError) {
+        console.error('儲存 Token 到資料庫失敗:', dbError)
+      }
+
+      res.json({
+        success: true,
+        data: result.data,
+        message: 'OAuth 授權成功，事件已發佈'
+      })
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'OAuth authorization failed'
+      })
+    }
+  } catch (error) {
+    console.error('OAuth 授權錯誤:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    })
+  }
+})
+
+// OAuth 撤銷 (帶事件發佈)
+app.post('/api/auth/revoke-oauth', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Missing or invalid authorization header' 
+      })
+    }
+
+    const accessToken = authHeader.substring(7)
+
+    // 使用 ShoplineAPIClientWrapper 來發佈事件
+    const apiClient = new ShoplineAPIClientWrapper()
+    const result = await apiClient.revokeOAuth(accessToken)
+
+    if (result.success) {
+      // 從資料庫刪除 token 資料
+      try {
+        const handle = 'paykepoc' // 可以從 token 中解析或使用預設值
+        await database.deleteToken(handle)
+      } catch (dbError) {
+        console.error('從資料庫刪除 Token 失敗:', dbError)
+      }
+
+      res.json({
+        success: true,
+        data: result.data,
+        message: 'OAuth 撤銷成功，事件已發佈'
+      })
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'OAuth revoke failed'
+      })
+    }
+  } catch (error) {
+    console.error('OAuth 撤銷錯誤:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    })
+  }
+})
+
+// 登入 (帶事件發佈)
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { username, password, loginMethod = 'oauth' } = req.body
+
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing username or password'
+      })
+    }
+
+    // 使用 ShoplineAPIClientWrapper 來發佈事件
+    const apiClient = new ShoplineAPIClientWrapper()
+    const result = await apiClient.login(username, password, loginMethod)
+
+    if (result.success) {
+      // 儲存 token 資料到資料庫
+      try {
+        const handle = 'paykepoc' // 可以從 token 中解析或使用預設值
+        await database.saveToken(handle, result.data)
+      } catch (dbError) {
+        console.error('儲存 Token 到資料庫失敗:', dbError)
+      }
+
+      res.json({
+        success: true,
+        data: result.data,
+        message: '登入成功，事件已發佈'
+      })
+    } else {
+      res.status(401).json({
+        success: false,
+        error: result.error || 'Login failed'
+      })
+    }
+  } catch (error) {
+    console.error('登入錯誤:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    })
+  }
+})
+
+// 登出 (帶事件發佈)
+app.post('/api/auth/logout', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Missing or invalid authorization header' 
+      })
+    }
+
+    const accessToken = authHeader.substring(7)
+
+    // 使用 ShoplineAPIClientWrapper 來發佈事件
+    const apiClient = new ShoplineAPIClientWrapper()
+    const result = await apiClient.logout(accessToken)
+
+    if (result.success) {
+      // 從資料庫刪除 token 資料
+      try {
+        const handle = 'paykepoc' // 可以從 token 中解析或使用預設值
+        await database.deleteToken(handle)
+      } catch (dbError) {
+        console.error('從資料庫刪除 Token 失敗:', dbError)
+      }
+
+      res.json({
+        success: true,
+        data: result.data,
+        message: '登出成功，事件已發佈'
+      })
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'Logout failed'
+      })
+    }
+  } catch (error) {
+    console.error('登出錯誤:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    })
+  }
+})
+
 // 錯誤處理中介軟體
 app.use((err, req, res, next) => {
   console.error('伺服器錯誤:', err)
@@ -462,7 +780,7 @@ async function startServer() {
     await database.init()
     
     // 啟動伺服器
-    app.listen(PORT, () => {
+    app.listen(PORT, async () => {
       console.log(`🚀 SHOPLINE OAuth App 已啟動`)
       console.log(`📍 本地伺服器: http://localhost:${PORT}`)
       console.log(`🔧 環境: ${config.node_env}`)
@@ -484,6 +802,14 @@ async function startServer() {
       console.log(`   1. 啟動 ngrok: ngrok http ${PORT}`)
       console.log(`   2. 更新 SHOPLINE Developer Center 設定`)
       console.log(`   3. 訪問: https://paykepoc.myshopline.com/admin/oauth-web/#/oauth/authorize?appKey=${config.app_key}&responseType=code&scope=read_products,read_orders&redirectUri=<ngrok-url>/oauth/callback`)
+      console.log('')
+      console.log('📊 Event Monitor Dashboard:')
+      console.log(`   GET  /event-monitor         - Event Monitor Dashboard`)
+      console.log(`   GET  /api/event-monitor/events - 取得事件列表`)
+      console.log(`   POST /api/event-monitor/test   - 發送測試事件`)
+      
+      // 初始化 Event Monitor
+      await setupEventMonitor()
     })
   } catch (error) {
     console.error('❌ 伺服器啟動失敗:', error)

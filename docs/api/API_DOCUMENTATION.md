@@ -463,6 +463,75 @@ tail -f logs/combined.log
 tail -f logs/error.log
 ```
 
+## 📊 Event Monitor Dashboard API
+
+### 1. 獲取歷史事件
+**端點**: `GET /api/event-monitor/events`
+
+**描述**: 獲取最近 100 筆歷史事件和統計資訊。
+
+**回應**:
+```javascript
+{
+  "success": true,
+  "events": [
+    {
+      "id": "string",
+      "type": "string",
+      "timestamp": "2025-10-27T11:02:12.278Z",
+      "payload": {},
+      "metadata": {}
+    }
+  ],
+  "stats": {
+    "total_events": 105,
+    "last_event_time": "2025-10-27T11:02:12.278Z"
+  }
+}
+```
+
+### 2. SSE 事件流
+**端點**: `GET /api/event-monitor/stream`
+
+**描述**: 建立 Server-Sent Events 連接，即時接收事件推送。
+
+**請求頭**:
+```
+Accept: text/event-stream
+Cache-Control: no-cache
+```
+
+**回應格式**:
+```
+data: {"id":"string","type":"string","timestamp":"2025-10-27T11:02:12.278Z","payload":{}}
+
+```
+
+### 3. 發布測試事件
+**端點**: `POST /api/event-monitor/test-simple`
+
+**描述**: 發布一個簡單的測試事件到 Event Bus。
+
+**回應**:
+```javascript
+{
+  "success": true,
+  "message": "Test event published successfully",
+  "event": {
+    "id": "string",
+    "type": "product.updated",
+    "timestamp": "2025-10-27T11:02:12.278Z"
+  }
+}
+```
+
+### 4. Event Monitor Dashboard 頁面
+**端點**: `GET /event-monitor`
+
+**描述**: 返回 Event Monitor Dashboard 前端頁面。
+
+**回應**: HTML 頁面
+
 ---
 
 ## 📋 總結
@@ -476,6 +545,7 @@ tail -f logs/error.log
 4. **系統監控** - 健康檢查和資訊查詢
 5. **安全機制** - HMAC-SHA256 簽名驗證
 6. **錯誤處理** - 標準化的錯誤回應
+7. **Event Monitor Dashboard** - 事件監控和測試工具
 
 ### ⚠️ 需要測試的功能
 1. **API 測試** - 商品和訂單 API 測試 (端點已實現但未驗證)

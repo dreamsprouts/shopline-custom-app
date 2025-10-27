@@ -1,5 +1,5 @@
 // Vercel Function: 測試商店資訊 API
-const ShoplineAPIClient = require('../../utils/shopline-api')
+const { ShoplineSourceConnector } = require('../../connectors/shopline/source/ShoplineSourceConnector')
 const database = require('../../utils/database-postgres')
 
 module.exports = async (req, res) => {
@@ -29,9 +29,9 @@ module.exports = async (req, res) => {
     
     const accessToken = authHeader.substring(7)
     
-    // 使用 SHOPLINE API 客戶端測試商店資訊 API
-    const apiClient = new ShoplineAPIClient()
-    const result = await apiClient.testShopInfoAPI(accessToken)
+    // 使用 Shopline Source Connector (會自動發佈事件)
+    const sourceConnector = new ShoplineSourceConnector()
+    const result = await sourceConnector.getShopInfo(accessToken)
     
     if (result.success) {
       res.json(result)

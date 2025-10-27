@@ -76,6 +76,14 @@
 │  │  - 語義治理 (避免混亂)                                     │  │
 │  │  - Schema validation                                     │  │
 │  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  Event Monitor Dashboard (事件監控儀表板)                 │  │
+│  │  - SSE 訂閱模式即時監控                                   │  │
+│  │  - 事件發布測試功能                                       │  │
+│  │  - 歷史事件載入 (100筆)                                   │  │
+│  │  - 統計數字顯示                                           │  │
+│  └──────────────────────────────────────────────────────────┘  │
 └────────────────────────┬────────────────────────────────────────┘
                          ↓ 分發到訂閱者
 ┌─────────────────────────────────────────────────────────────────┐
@@ -497,7 +505,7 @@ interface ISourceConnector {
 }
 ```
 
-#### 範例：Shopline Source Connector
+#### 範例：Shopline Source Connector (雙寫模式)
 
 ```typescript
 class ShoplineSourceConnector implements ISourceConnector {
@@ -505,9 +513,11 @@ class ShoplineSourceConnector implements ISourceConnector {
   
   constructor(
     private eventBus: IEventBus,
-    private config: ShoplineConfig
+    private config: ShoplineConfig,
+    private apiClient: ShoplineAPIClient  // 新增：API 客戶端
   ) {}
   
+  // === Webhook 處理 (原有設計) ===
   async handleWebhook(req: Request, res: Response): Promise<void> {
     try {
       // 1. 驗證簽章
@@ -532,11 +542,68 @@ class ShoplineSourceConnector implements ISourceConnector {
       
       // 5. 立即回應 200 (不等待處理完成)
       res.status(200).send('OK');
-      
     } catch (error) {
-      console.error('[ShoplineConnector] Webhook error:', error);
+      console.error('Webhook 處理失敗:', error);
       res.status(500).send('Internal Server Error');
     }
+  }
+  
+  // === 雙寫模式：API 呼叫 + 事件發佈 ===
+  async getProducts(accessToken: string, params: any): Promise<ApiResponse> {
+    // 1. 呼叫原始 API
+    const result = await this.apiClient.getProducts(accessToken, params);
+    
+    // 2. 發佈事件 (如果啟用)
+    if (this.isEnabled() && result.success) {
+      await this.publishProductsListEvent(result, accessToken, params);
+    }
+    
+    // 3. 回傳原始結果
+    return result;
+  }
+  
+  async createProduct(accessToken: string, payload: any): Promise<ApiResponse> {
+    // 1. 呼叫原始 API
+    const result = await this.apiClient.createProduct(accessToken, payload);
+    
+    // 2. 發佈事件 (如果啟用)
+    if (this.isEnabled() && result.success) {
+      await this.publishProductCreatedEvent(result, accessToken, payload);
+    }
+    
+    // 3. 回傳原始結果
+    return result;
+  }
+  
+  async createOrder(accessToken: string, payload: any): Promise<ApiResponse> {
+    // 1. 呼叫原始 API
+    const result = await this.apiClient.createOrder(accessToken, payload);
+    
+    // 2. 發佈事件 (如果啟用)
+    if (this.isEnabled() && result.success) {
+      await this.publishOrderCreatedEvent(result, accessToken, payload);
+    }
+    
+    // 3. 回傳原始結果
+    return result;
+  }
+  
+  // === 事件發佈方法 ===
+  private async publishProductsListEvent(apiResponse: ApiResponse, accessToken: string, params: any): Promise<void> {
+    // 實作商品列表事件發佈
+  }
+  
+  private async publishProductCreatedEvent(apiResponse: ApiResponse, accessToken: string, payload: any): Promise<void> {
+    // 實作商品建立事件發佈
+  }
+  
+  private async publishOrderCreatedEvent(apiResponse: ApiResponse, accessToken: string, payload: any): Promise<void> {
+    // 實作訂單建立事件發佈
+  }
+  
+  // === 功能開關 ===
+  isEnabled(): boolean {
+    return this.config.enabled && process.env.ENABLE_SHOPLINE_SOURCE === 'true';
   }
   
   toStandardEvent(platformEvent: any): StandardEvent {
@@ -1258,6 +1325,31 @@ custom-app/
 - [ ] 端到端測試
 - [ ] 效能測試
 - [ ] 文件更新
+
+## 📊 Event Monitor Dashboard
+
+### 功能概述
+Event Monitor Dashboard 是 Event Bus 系統的**可視化監控工具**，讓用戶能夠直觀地測試和監控事件流。
+
+### 核心功能
+1. **即時監控**：使用 Server-Sent Events (SSE) 訂閱模式
+2. **事件發布測試**：測試 Event Bus 事件發布功能
+3. **歷史事件載入**：載入最近 100 筆歷史事件
+4. **統計顯示**：顯示資料庫總事件數和 log 區域統計
+
+### 技術實作
+- **前端**：HTML + JavaScript + SSE
+- **後端**：Express.js + Event Bus
+- **資料庫**：PostgreSQL
+- **API 端點**：
+  - `GET /api/event-monitor/events` - 獲取歷史事件
+  - `GET /api/event-monitor/stream` - SSE 事件流
+  - `POST /api/event-monitor/test-simple` - 發布測試事件
+
+### 統計數字說明
+- **右上角「資料庫總事件數」**：顯示資料庫中所有事件的總數
+- **下方統計卡片**：顯示當前 log 顯示區域中的事件統計
+- **最後事件時間**：顯示最新事件的真實時間戳（非前端處理時間）
 
 ---
 

@@ -36,43 +36,38 @@ module.exports = async (req, res) => {
     
     // 驗證必要參數
     if (!appkey || !code || !handle || !timestamp || !sign) {
-      return res.status(400).json({ 
-        error: 'Missing required parameters' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Missing required parameters')}&handle=${handle || 'unknown'}`
+      return res.redirect(errorUrl)
     }
     
     // 驗證簽名
     const isValidSignature = verifyGetSignature(req.query, sign, config.app_secret)
     if (!isValidSignature) {
       console.error('簽名驗證失敗')
-      return res.status(401).json({ 
-        error: 'Invalid signature' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Invalid signature')}&handle=${handle}`
+      return res.redirect(errorUrl)
     }
     
     // 驗證時間戳
     const isValidTimestamp = verifyTimestamp(timestamp)
     if (!isValidTimestamp) {
       console.error('時間戳驗證失敗')
-      return res.status(401).json({ 
-        error: 'Request expired' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Request expired')}&handle=${handle}`
+      return res.redirect(errorUrl)
     }
     
     // 驗證 app key
     if (appkey !== config.app_key) {
       console.error('App key 不匹配')
-      return res.status(401).json({ 
-        error: 'Invalid app key' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Invalid app key')}&handle=${handle}`
+      return res.redirect(errorUrl)
     }
     
     // 驗證商店 handle
     if (handle !== config.shop_handle) {
       console.error('商店 handle 不匹配')
-      return res.status(401).json({ 
-        error: 'Invalid shop handle' 
-      })
+      const errorUrl = `/views/error.html?error=${encodeURIComponent('Invalid shop handle')}&handle=${handle}`
+      return res.redirect(errorUrl)
     }
     
     console.log('授權碼驗證成功:', code)
@@ -127,9 +122,7 @@ module.exports = async (req, res) => {
     
   } catch (error) {
     console.error('OAuth 回調處理失敗:', error)
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: error.message 
-    })
+    const errorUrl = `/views/error.html?error=${encodeURIComponent('Internal server error')}&handle=${req.query.handle || 'unknown'}`
+    res.redirect(errorUrl)
   }
 }

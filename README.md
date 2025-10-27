@@ -7,7 +7,7 @@
 ## 🎯 專案願景
 
 建立一個 **Event-Driven 的多平台 Connector 系統**，支援：
-- **Shopline** (電商平台) - ✅ 已整合
+- **Shopline** (電商平台) - ✅ 已整合 + Event Bus
 - **Next Engine** (OMS 訂單管理) - 🔄 整合中
 - **未來**: Shopify, WooCommerce, 其他平台
 
@@ -16,6 +16,7 @@
 - 📦 **訂單管理**: Shopline → Next Engine 訂單推送
 - 🔌 **可擴展性**: 新增端點不影響核心邏輯
 - 👀 **可觀測性**: 所有變化都是可追蹤的事件
+- 📊 **即時監控**: Event Monitor Dashboard 使用 SSE 訂閱模式監控事件流
 
 ---
 
@@ -80,14 +81,28 @@
 # 1. 安裝依賴
 npm install
 
-# 2. 啟動應用
+# 2. 設定 Vercel Postgres 資料庫
+# 在 Vercel Dashboard 中建立 Postgres 資料庫
+# 取得連接字串後設定環境變數
+export POSTGRES_URL="postgres://username:password@host:port/database"
+
+# 3. 啟動應用
 npm start
 
-# 3. 啟動 ngrok (新終端)
+# 4. 啟動 ngrok (新終端)
 npm run ngrok
 
-# 4. 訪問應用
+# 5. 訪問應用
 open http://localhost:3000
+
+# 6. 訪問 Event Monitor Dashboard
+open http://localhost:3000/event-monitor
+
+# Event Monitor Dashboard 功能：
+# - 即時監控：使用 SSE 訂閱模式監控事件流
+# - 事件發布：測試 Event Bus 事件發布功能
+# - 歷史載入：載入最近 100 筆歷史事件
+# - 統計顯示：顯示資料庫總事件數和 log 區域統計
 ```
 
 ## 📚 詳細文件導航
