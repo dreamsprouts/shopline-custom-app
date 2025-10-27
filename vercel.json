@@ -25,6 +25,14 @@
       "destination": "/api/oauth/revoke"
     },
     {
+      "source": "/oauth/status",
+      "destination": "/api/oauth/status"
+    },
+    {
+      "source": "/oauth/token-status",
+      "destination": "/api/oauth/token-status"
+    },
+    {
       "source": "/api/test/shop",
       "destination": "/api/test/unified?type=shop"
     },
