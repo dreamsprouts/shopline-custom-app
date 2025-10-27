@@ -5,7 +5,6 @@ const {
   verifyTimestamp,
   signPostRequest 
 } = require('../../utils/signature')
-const database = require('../../utils/database-postgres')
 
 // 環境變數配置
 const config = {
