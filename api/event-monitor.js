@@ -7,7 +7,6 @@
  */
 
 const { getEventBus } = require('../core/event-bus')
-const database = require('../utils/database-postgres')
 const { createEventPayload } = require('../core/events')
 
 module.exports = async (req, res) => {
@@ -55,7 +54,8 @@ async function handleGetEvents(req, res) {
   }
 
   try {
-    // 確保資料庫已初始化
+    // 僅在需要時載入資料庫
+    const database = require('../utils/database-postgres')
     await database.init()
     
     // 取得 Event Bus 實例
