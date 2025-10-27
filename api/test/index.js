@@ -6,6 +6,10 @@
  * GET /api/test?type=orders - 查詢訂單列表
  */
 
+// 設置基本環境變數（如果未設置）
+if (!process.env.USE_EVENT_BUS) process.env.USE_EVENT_BUS = 'false'
+if (!process.env.EVENT_BUS_TYPE) process.env.EVENT_BUS_TYPE = 'memory'
+
 const { ShoplineSourceConnector } = require('../../connectors/shopline/source/ShoplineSourceConnector')
 const ShoplineAPIClient = require('../../utils/shopline-api')
 

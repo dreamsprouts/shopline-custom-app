@@ -85,13 +85,13 @@ module.exports = async (req, res) => {
     }
     
     // 生成簽名
-    const timestamp = Date.now().toString()
-    const signature = signPostRequest(JSON.stringify(tokenData), timestamp, config.app_secret)
+    const currentTimestamp = Date.now().toString()
+    const signature = signPostRequest(JSON.stringify(tokenData), currentTimestamp, config.app_secret)
     
     const tokenResponse = await axios.post(tokenUrl, tokenData, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Timestamp': timestamp,
+        'X-Timestamp': currentTimestamp,
         'X-Signature': signature
       }
     })
