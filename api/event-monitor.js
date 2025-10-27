@@ -54,17 +54,28 @@ async function handleGetEvents(req, res) {
   }
 
   try {
-    // 僅在需要時載入資料庫
-    const database = require('../utils/database-postgres')
-    await database.init()
-    
     // 取得 Event Bus 實例
     const eventBus = getEventBus()
-    
-    // 取得事件列表和統計
-    const events = await database.getEvents(100, 0) // 最近 100 個事件
-    const eventStats = await database.getEventStats()
     const busStats = eventBus.getStats()
+    
+    // 嘗試從資料庫取得事件，如果失敗則返回空列表
+    let events = []
+    let eventStats = {
+      total: 0,
+      product_events: 0,
+      order_events: 0,
+      last_event_time: null
+    }
+    
+    try {
+      const database = require('../utils/database-postgres')
+      await database.init()
+      events = await database.getEvents(100, 0)
+      eventStats = await database.getEventStats()
+    } catch (dbError) {
+      console.warn('⚠️ 資料庫連線失敗，使用記憶體事件列表:', dbError.message)
+      // 資料庫連線失敗不影響基本功能
+    }
     
     // 回傳事件歷史和統計
     res.json({
