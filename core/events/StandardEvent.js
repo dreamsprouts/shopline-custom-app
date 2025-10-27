@@ -1,4 +1,6 @@
-const { v4: uuidv4 } = require('uuid')
+// 使用 crypto.randomUUID() 替代 uuid 套件，避免 ESM 相容性問題
+const crypto = require('crypto')
+const uuidv4 = () => crypto.randomUUID()
 const { isValidEventType } = require('./EventTypes')
 
 /**

@@ -438,10 +438,10 @@ app.get('/event-monitor-subscription', (req, res) => {
 })
 
 // Event Monitor API 路由
-app.get('/api/event-monitor/events', require('./api/event-monitor/events'))
-app.get('/api/event-monitor/stream', require('./api/event-monitor/stream'))
-app.post('/api/event-monitor/test', require('./api/event-monitor/test'))
-app.post('/api/event-monitor/test-simple', require('./api/event-monitor/test-simple'))
+app.get('/api/event-monitor/events', require('./api/event-monitor'))
+app.get('/api/event-monitor/stream', require('./api/event-monitor'))
+app.post('/api/event-monitor/test', require('./api/event-monitor'))
+app.post('/api/event-monitor/test-simple', require('./api/event-monitor'))
 
 // API 資訊端點
 app.get('/api/info', (req, res) => {

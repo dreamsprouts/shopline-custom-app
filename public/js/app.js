@@ -355,7 +355,8 @@ class ShoplineOAuthApp {
                     'Authorization': `Bearer ${this.tokenData.accessToken}`
                 },
                 body: JSON.stringify({
-                    refreshToken: this.tokenData.refreshToken
+                    refreshToken: this.tokenData.refreshToken,
+                    handle: this.config.shopHandle
                 })
             })
             
@@ -628,7 +629,7 @@ class ShoplineOAuthApp {
         try {
             // Vercel 使用 /api/test/orders/list，本地使用 /api/test/orders
             const endpoint = window.location.hostname.includes('vercel.app') 
-                ? '/api/test/orders/list?page=1&limit=10' 
+                ? '/api/test/orders/list?page=1&limit=10'
                 : '/api/test/orders?page=1&limit=10'
             
             const response = await fetch(endpoint, {

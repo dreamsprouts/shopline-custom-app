@@ -362,8 +362,8 @@
                 
                 eventSource.addEventListener('connected', function(event) {
                     console.log('📡 訂閱已確認:', event.data);
-                    isMonitoring = true;
-                    updateStatus();
+            isMonitoring = true;
+            updateStatus();
                 });
                 
                 eventSource.addEventListener('event', function(event) {
@@ -385,7 +385,7 @@
                     updateConnectionStatus('disconnected', '🔌 連接錯誤');
                     stopMonitoring();
                 };
-                
+            
                 console.log('📡 開始訂閱 Event Bus...');
                 
             } catch (error) {
@@ -416,9 +416,9 @@
             if (existingEvent) return;
             
             // 更新計數器（無論是 SSE 推送還是手動載入）
-            eventCount++;
-            if (event.type.includes('product')) productEventCount++;
-            if (event.type.includes('order')) orderEventCount++;
+                eventCount++;
+                if (event.type.includes('product')) productEventCount++;
+                if (event.type.includes('order')) orderEventCount++;
             // 使用事件的真實時間戳，而不是當前時間
             lastEventTime = new Date(event.timestamp).toLocaleTimeString();
             updateStats();
@@ -612,8 +612,8 @@
                 }
             } catch (error) {
                 console.error('初始化統計數據失敗:', error);
-            }
-        }
+      }
+    }
 
         // 初始化
         updateStatus();

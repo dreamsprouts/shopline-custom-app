@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/views/index.html"
+      "destination": "/api/index"
     },
     {
       "source": "/health",
@@ -25,8 +25,12 @@
       "destination": "/api/oauth/revoke"
     },
     {
-      "source": "/api/test",
-      "destination": "/api/test"
+      "source": "/api/test/shop",
+      "destination": "/api/test/unified?type=shop"
+    },
+    {
+      "source": "/api/test/products",
+      "destination": "/api/test/unified?type=products"
     },
     {
       "source": "/api/test/orders/:id",
@@ -38,15 +42,23 @@
     },
     {
       "source": "/api/event-monitor/events",
-      "destination": "/api/event-monitor/events"
+      "destination": "/api/event-monitor"
     },
     {
       "source": "/api/event-monitor/stream",
-      "destination": "/api/event-monitor/stream"
+      "destination": "/api/event-monitor?action=stream"
     },
     {
       "source": "/api/event-monitor/test-simple",
-      "destination": "/api/event-monitor/test-simple"
+      "destination": "/api/event-monitor?action=test-simple"
+    },
+    {
+      "source": "/api/test/orders/create",
+      "destination": "/api/test/orders/create"
+    },
+    {
+      "source": "/api/test/orders/list",
+      "destination": "/api/test/orders/list"
     }
   ],
   "functions": {
