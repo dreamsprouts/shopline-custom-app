@@ -24,6 +24,30 @@ module.exports = async (req, res) => {
     return
   }
 
+  // 處理 status 和 token-status 路由
+  if (req.url.includes('/status') || req.url.includes('/token-status')) {
+    try {
+      const database = require('../../utils/database-postgres')
+      try {
+        await database.init()
+      } catch (dbError) {
+        console.warn('⚠️ 資料庫連線失敗:', dbError.message)
+        return res.json({ status: 'ok', timestamp: new Date().toISOString() })
+      }
+
+      const handle = req.query.handle || process.env.SHOP_HANDLE || 'paykepoc'
+      const token = await database.getToken(handle)
+      
+      return res.json({
+        success: !!token,
+        message: token ? `Token 已取得: ${handle}` : `Token 未取得: ${handle}`,
+        hasToken: !!token
+      })
+    } catch (error) {
+      return res.json({ status: 'ok', timestamp: new Date().toISOString() })
+    }
+  }
+
   if (req.method !== 'GET') {
     res.status(405).json({ error: 'Method not allowed' })
     return

@@ -17,20 +17,20 @@
       "destination": "/api/oauth/callback"
     },
     {
+      "source": "/oauth/status",
+      "destination": "/api/oauth/callback"
+    },
+    {
+      "source": "/oauth/token-status",
+      "destination": "/api/oauth/callback"
+    },
+    {
       "source": "/oauth/refresh",
       "destination": "/api/oauth/refresh"
     },
     {
       "source": "/oauth/revoke",
       "destination": "/api/oauth/revoke"
-    },
-    {
-      "source": "/oauth/status",
-      "destination": "/api/oauth/status"
-    },
-    {
-      "source": "/oauth/token-status",
-      "destination": "/api/oauth/token-status"
     },
     {
       "source": "/api/test/shop",
